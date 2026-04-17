@@ -239,7 +239,7 @@ export const OrdersImportDialog = ({ open, onOpenChange, onImported }: Props) =>
 
           {result && (
             <div className="rounded-lg border border-border p-3 space-y-1 text-sm">
-              <div className="flex items-center gap-2 text-green-600">
+              <div className="flex items-center gap-2 text-primary">
                 <CheckCircle2 className="w-4 h-4" /> {result.inserted} importados
               </div>
               {result.skipped > 0 && (
