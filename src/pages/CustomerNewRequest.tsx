@@ -24,6 +24,7 @@ const CustomerNewRequest = () => {
   const [step, setStep] = useState(0);
   const [orderData, setOrderData] = useState<typeof mockOrders[0] | null>(null);
   const [orderId, setOrderId] = useState("");
+  const [cpf, setCpf] = useState("");
   const [error, setError] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [reasons, setReasons] = useState<Record<string, { reason: string; notes: string }>>({});
@@ -31,11 +32,21 @@ const CustomerNewRequest = () => {
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const onlyDigits = (v: string) => v.replace(/\D/g, "");
+
   const findOrder = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!orderId.trim() || !cpf.trim()) {
+      setError("Informe o número do pedido e o CPF.");
+      return;
+    }
     const order = mockOrders.find((o) => o.id.toLowerCase() === orderId.trim().toLowerCase());
     if (!order) { setError("Pedido não encontrado. Tente AVN-20241201 ou AVN-20241205."); return; }
+    if (onlyDigits(order.customerCpf) !== onlyDigits(cpf)) {
+      setError("CPF não confere com o pedido informado.");
+      return;
+    }
     setOrderData(order);
     setStep(1);
   };
@@ -98,13 +109,17 @@ const CustomerNewRequest = () => {
                   <Search className="w-6 h-6 text-primary" />
                 </div>
                 <CardTitle className="text-xl">Encontre seu pedido</CardTitle>
-                <CardDescription>Informe o número do pedido para iniciar.</CardDescription>
+                <CardDescription>Informe o número do pedido e o CPF do titular para iniciar.</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={findOrder} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="orderId">Número do Pedido</Label>
                     <Input id="orderId" placeholder="Ex: AVN-20241201" value={orderId} onChange={(e) => setOrderId(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cpf">CPF do titular</Label>
+                    <Input id="cpf" placeholder="Ex: 123.456.789-00" value={cpf} onChange={(e) => setCpf(e.target.value)} />
                   </div>
                   {error && <p className="text-sm text-destructive">{error}</p>}
                   <Button type="submit" className="w-full">Buscar Pedido</Button>

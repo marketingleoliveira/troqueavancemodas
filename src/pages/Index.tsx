@@ -31,7 +31,7 @@ const Index = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button size="lg" onClick={() => navigate("/portal")} className="gap-2">
+            <Button size="lg" onClick={() => navigate("/auth")} className="gap-2">
               <ShieldCheck className="w-5 h-5" /> Portal do Cliente
               <ArrowRight className="w-4 h-4" />
             </Button>
