@@ -14,6 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          price: number
+          product_name: string
+          product_sku: string | null
+          quantity: number
+          variant: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          price?: number
+          product_name: string
+          product_sku?: string | null
+          quantity?: number
+          variant?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          price?: number
+          product_name?: string
+          product_sku?: string | null
+          quantity?: number
+          variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_cpf: string | null
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          financial_status: string | null
+          fulfillment_status: string | null
+          id: string
+          order_date: string | null
+          order_number: string
+          raw_data: Json | null
+          shipping: number | null
+          subtotal: number | null
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_cpf?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          financial_status?: string | null
+          fulfillment_status?: string | null
+          id?: string
+          order_date?: string | null
+          order_number: string
+          raw_data?: Json | null
+          shipping?: number | null
+          subtotal?: number | null
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_cpf?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          financial_status?: string | null
+          fulfillment_status?: string | null
+          id?: string
+          order_date?: string | null
+          order_number?: string
+          raw_data?: Json | null
+          shipping?: number | null
+          subtotal?: number | null
+          total?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

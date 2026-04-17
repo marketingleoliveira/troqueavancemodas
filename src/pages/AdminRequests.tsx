@@ -6,9 +6,10 @@ import { statusLabels, resolutionLabels } from "@/data/mockData";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { XCircle, Gift, Truck, Eye, Inbox } from "lucide-react";
+import { XCircle, Gift, Truck, Eye, Inbox, Upload, Package } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { OrdersImportDialog } from "@/components/admin/OrdersImportDialog";
 
 interface RequestItem {
   id: string;
@@ -43,6 +44,13 @@ const AdminRequests = () => {
   const [requests, setRequests] = useState<ReturnRequestRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<ReturnRequestRow | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [ordersCount, setOrdersCount] = useState<number>(0);
+
+  const fetchOrdersCount = async () => {
+    const { count } = await supabase.from("orders").select("*", { count: "exact", head: true });
+    setOrdersCount(count ?? 0);
+  };
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -61,6 +69,7 @@ const AdminRequests = () => {
 
   useEffect(() => {
     fetchRequests();
+    fetchOrdersCount();
   }, []);
 
   const updateStatus = async (id: string, status: "completed" | "rejected" | "awaiting_shipment") => {
@@ -75,9 +84,20 @@ const AdminRequests = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Solicitações</h1>
-        <p className="text-sm text-muted-foreground">Gerencie as trocas e devoluções dos clientes</p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Solicitações</h1>
+          <p className="text-sm text-muted-foreground">Gerencie as trocas e devoluções dos clientes</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground border border-border rounded-md px-3 py-2">
+            <Package className="w-3.5 h-3.5" />
+            <span>{ordersCount} pedidos cadastrados</span>
+          </div>
+          <Button onClick={() => setImportOpen(true)} className="gap-2">
+            <Upload className="w-4 h-4" /> Importar Pedidos (CSV)
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -213,6 +233,8 @@ const AdminRequests = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      <OrdersImportDialog open={importOpen} onOpenChange={setImportOpen} onImported={fetchOrdersCount} />
     </div>
   );
 };
