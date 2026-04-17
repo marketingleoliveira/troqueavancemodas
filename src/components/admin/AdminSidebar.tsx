@@ -1,4 +1,4 @@
-import { LayoutDashboard, ClipboardList, Settings, Package } from "lucide-react";
+import { LayoutDashboard, ClipboardList, MessageCircle, Settings, Package } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -16,6 +16,7 @@ import {
 const items = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "Solicitações", url: "/admin/requests", icon: ClipboardList },
+  { title: "Atendimento", url: "/admin/chats", icon: MessageCircle },
   { title: "Configurações", url: "/admin/settings", icon: Settings },
 ];
 

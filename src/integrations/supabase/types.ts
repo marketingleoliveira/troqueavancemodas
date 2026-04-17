@@ -41,6 +41,41 @@ export type Database = {
         }
         Relationships: []
       }
+      request_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          request_id: string
+          sender: Database["public"]["Enums"]["message_sender"]
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          request_id: string
+          sender: Database["public"]["Enums"]["message_sender"]
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          request_id?: string
+          sender?: Database["public"]["Enums"]["message_sender"]
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "return_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       return_request_items: {
         Row: {
           color: string | null
@@ -108,6 +143,7 @@ export type Database = {
           tracking_code: string | null
           type: Database["public"]["Enums"]["request_type"]
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -122,6 +158,7 @@ export type Database = {
           tracking_code?: string | null
           type: Database["public"]["Enums"]["request_type"]
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -136,6 +173,7 @@ export type Database = {
           tracking_code?: string | null
           type?: Database["public"]["Enums"]["request_type"]
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -176,6 +214,7 @@ export type Database = {
     }
     Enums: {
       app_role: "super_admin" | "admin" | "user"
+      message_sender: "customer" | "admin"
       request_resolution: "refund" | "voucher" | "exchange"
       request_status:
         | "pending"
@@ -312,6 +351,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "user"],
+      message_sender: ["customer", "admin"],
       request_resolution: ["refund", "voucher", "exchange"],
       request_status: [
         "pending",
