@@ -41,6 +41,104 @@ export type Database = {
         }
         Relationships: []
       }
+      return_request_items: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          price: number
+          product_id: string | null
+          product_image: string | null
+          product_name: string
+          product_sku: string | null
+          reason: string
+          request_id: string
+          size: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          price?: number
+          product_id?: string | null
+          product_image?: string | null
+          product_name: string
+          product_sku?: string | null
+          reason: string
+          request_id: string
+          size?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          price?: number
+          product_id?: string | null
+          product_image?: string | null
+          product_name?: string
+          product_sku?: string | null
+          reason?: string
+          request_id?: string
+          size?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "return_request_items_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "return_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      return_requests: {
+        Row: {
+          created_at: string
+          customer_cpf: string | null
+          customer_email: string
+          customer_name: string
+          id: string
+          notes: string | null
+          order_id: string
+          resolution: Database["public"]["Enums"]["request_resolution"]
+          status: Database["public"]["Enums"]["request_status"]
+          tracking_code: string | null
+          type: Database["public"]["Enums"]["request_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_cpf?: string | null
+          customer_email: string
+          customer_name: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          resolution: Database["public"]["Enums"]["request_resolution"]
+          status?: Database["public"]["Enums"]["request_status"]
+          tracking_code?: string | null
+          type: Database["public"]["Enums"]["request_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_cpf?: string | null
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          resolution?: Database["public"]["Enums"]["request_resolution"]
+          status?: Database["public"]["Enums"]["request_status"]
+          tracking_code?: string | null
+          type?: Database["public"]["Enums"]["request_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -74,9 +172,18 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "user"
+      request_resolution: "refund" | "voucher" | "exchange"
+      request_status:
+        | "pending"
+        | "awaiting_shipment"
+        | "received"
+        | "completed"
+        | "rejected"
+      request_type: "exchange" | "return"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -205,6 +312,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "user"],
+      request_resolution: ["refund", "voucher", "exchange"],
+      request_status: [
+        "pending",
+        "awaiting_shipment",
+        "received",
+        "completed",
+        "rejected",
+      ],
+      request_type: ["exchange", "return"],
     },
   },
 } as const
