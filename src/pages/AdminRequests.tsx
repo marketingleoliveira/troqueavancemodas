@@ -69,6 +69,7 @@ const AdminRequests = () => {
 
   useEffect(() => {
     fetchRequests();
+    fetchOrdersCount();
   }, []);
 
   const updateStatus = async (id: string, status: "completed" | "rejected" | "awaiting_shipment") => {
