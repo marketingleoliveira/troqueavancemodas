@@ -6,9 +6,10 @@ import { statusLabels, resolutionLabels } from "@/data/mockData";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { XCircle, Gift, Truck, Eye, Inbox } from "lucide-react";
+import { XCircle, Gift, Truck, Eye, Inbox, Upload, Package } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { OrdersImportDialog } from "@/components/admin/OrdersImportDialog";
 
 interface RequestItem {
   id: string;
