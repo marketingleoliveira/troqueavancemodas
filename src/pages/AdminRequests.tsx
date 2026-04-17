@@ -233,6 +233,8 @@ const AdminRequests = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      <OrdersImportDialog open={importOpen} onOpenChange={setImportOpen} onImported={fetchOrdersCount} />
     </div>
   );
 };
