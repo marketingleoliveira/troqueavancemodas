@@ -2,18 +2,75 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, Copy, Package } from "lucide-react";
+import { CheckCircle2, Copy, Package, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import type { Product } from "@/data/mockData";
 
 interface Props {
   resolution: string;
+  orderData: { id: string; customerName: string; customerEmail: string; customerCpf?: string } | null;
+  selectedProducts: Product[];
+  reasons: Record<string, { reason: string; notes: string }>;
   onRestart: () => void;
 }
 
-export const PortalConclusion = ({ resolution, onRestart }: Props) => {
+export const PortalConclusion = ({ resolution, orderData, selectedProducts, reasons, onRestart }: Props) => {
   const [accepted, setAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const trackingCode = "BR" + Math.random().toString().slice(2, 11) + "BR";
+  const [submitting, setSubmitting] = useState(false);
+  const [trackingCode, setTrackingCode] = useState("");
+
+  const handleSubmit = async () => {
+    if (!orderData) return;
+    setSubmitting(true);
+    try {
+      const code = "BR" + Math.random().toString().slice(2, 11) + "BR";
+      const type = resolution === "exchange" ? "exchange" : "return";
+
+      const { data: request, error: reqError } = await supabase
+        .from("return_requests")
+        .insert({
+          order_id: orderData.id,
+          customer_name: orderData.customerName,
+          customer_email: orderData.customerEmail,
+          customer_cpf: orderData.customerCpf ?? null,
+          status: "pending",
+          type,
+          resolution: resolution as "refund" | "voucher" | "exchange",
+          tracking_code: code,
+        })
+        .select()
+        .single();
+
+      if (reqError) throw reqError;
+
+      const items = selectedProducts.map((p) => ({
+        request_id: request.id,
+        product_id: p.id,
+        product_name: p.name,
+        product_image: p.image,
+        product_sku: p.sku,
+        size: p.size ?? null,
+        color: p.color ?? null,
+        price: p.price,
+        reason: reasons[p.id]?.reason || "other",
+        notes: reasons[p.id]?.notes || null,
+      }));
+
+      const { error: itemsError } = await supabase.from("return_request_items").insert(items);
+      if (itemsError) throw itemsError;
+
+      setTrackingCode(code);
+      setSubmitted(true);
+      toast.success("Solicitação registrada com sucesso!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao enviar solicitação. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (submitted) {
     return (
@@ -88,8 +145,8 @@ export const PortalConclusion = ({ resolution, onRestart }: Props) => {
           </label>
         </div>
 
-        <Button onClick={() => setSubmitted(true)} disabled={!accepted} className="w-full">
-          Enviar Solicitação
+        <Button onClick={handleSubmit} disabled={!accepted || submitting} className="w-full">
+          {submitting ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enviando...</>) : "Enviar Solicitação"}
         </Button>
       </CardContent>
     </Card>

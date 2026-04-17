@@ -1,27 +1,40 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockReturnRequests, statusLabels, resolutionLabels } from "@/data/mockData";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowUpRight, Package, TrendingUp, Star, BarChart3 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminDashboard = () => {
-  const total = mockReturnRequests.length;
-  const vouchers = mockReturnRequests.filter((r) => r.resolution === "voucher").length;
-  const refunds = mockReturnRequests.filter((r) => r.resolution === "refund").length;
-  const retentionRate = total > 0 ? Math.round(((total - refunds) / total) * 100) : 0;
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [retentionRate, setRetentionRate] = useState(0);
+  const [chartData, setChartData] = useState<{ name: string; value: number }[]>([]);
 
-  const reasonCounts: Record<string, number> = {};
-  mockReturnRequests.forEach((r) => {
-    r.products.forEach((p) => {
-      const label = p.reason === "defect" ? "Defeito" : p.reason === "wrong_size" ? "Tamanho" : p.reason === "regret" ? "Arrependimento" : "Outro";
-      reasonCounts[label] = (reasonCounts[label] || 0) + 1;
-    });
-  });
-  const chartData = Object.entries(reasonCounts).map(([name, value]) => ({ name, value }));
+  useEffect(() => {
+    (async () => {
+      const { data: requests } = await supabase.from("return_requests").select("id, resolution");
+      const { data: items } = await supabase.from("return_request_items").select("reason");
+
+      const t = requests?.length ?? 0;
+      const refunds = requests?.filter((r) => r.resolution === "refund").length ?? 0;
+      setTotal(t);
+      setRetentionRate(t > 0 ? Math.round(((t - refunds) / t) * 100) : 0);
+
+      const reasonCounts: Record<string, number> = {};
+      items?.forEach((it) => {
+        const label = it.reason === "defect" ? "Defeito" : it.reason === "wrong_size" ? "Tamanho" : it.reason === "regret" ? "Arrependimento" : "Outro";
+        reasonCounts[label] = (reasonCounts[label] || 0) + 1;
+      });
+      setChartData(Object.entries(reasonCounts).map(([name, value]) => ({ name, value })));
+      setLoading(false);
+    })();
+  }, []);
 
   const metrics = [
-    { title: "Solicitações no mês", value: total, icon: Package, change: "+12%" },
-    { title: "Retenção (Vale-Compras)", value: `${retentionRate}%`, icon: TrendingUp, change: "+5%" },
-    { title: "NPS Médio", value: "8.4", icon: Star, change: "+0.3" },
+    { title: "Solicitações no mês", value: total, icon: Package, change: "—" },
+    { title: "Retenção (Vale/Troca)", value: `${retentionRate}%`, icon: TrendingUp, change: "—" },
+    { title: "NPS Médio", value: "—", icon: Star, change: "—" },
   ];
 
   return (
@@ -38,14 +51,14 @@ const AdminDashboard = () => {
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{m.title}</p>
-                  <p className="text-3xl font-bold">{m.value}</p>
+                  {loading ? <Skeleton className="h-9 w-20" /> : <p className="text-3xl font-bold">{m.value}</p>}
                 </div>
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <m.icon className="w-5 h-5 text-primary" />
                 </div>
               </div>
-              <p className="text-xs text-success flex items-center gap-1 mt-2">
-                <ArrowUpRight className="w-3 h-3" /> {m.change} vs. mês anterior
+              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-2">
+                <ArrowUpRight className="w-3 h-3" /> {m.change}
               </p>
             </CardContent>
           </Card>
@@ -60,22 +73,28 @@ const AdminDashboard = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                }}
-              />
-              <Bar dataKey="value" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <Skeleton className="h-[260px] w-full" />
+          ) : chartData.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-12">Sem dados ainda.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                  }}
+                />
+                <Bar dataKey="value" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </CardContent>
       </Card>
     </div>
