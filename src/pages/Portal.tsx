@@ -75,7 +75,13 @@ const Portal = () => {
               <PortalResolution onSubmit={handleResolution} onBack={() => setStep(2)} />
             )}
             {step === 4 && (
-              <PortalConclusion resolution={resolution} onRestart={() => { setStep(0); setOrderData(null); setSelectedProducts([]); setReasons({}); setResolution(""); }} />
+              <PortalConclusion
+                resolution={resolution}
+                orderData={orderData}
+                selectedProducts={selectedProducts}
+                reasons={reasons}
+                onRestart={() => { setStep(0); setOrderData(null); setSelectedProducts([]); setReasons({}); setResolution(""); }}
+              />
             )}
           </motion.div>
         </AnimatePresence>
