@@ -21,12 +21,12 @@ interface Detail {
   return_request_items: {
     id: string;
     product_name: string;
-    product_image: string | null;
     size: string | null;
     color: string | null;
     price: number;
     reason: string;
     notes: string | null;
+    photos: string[];
   }[];
 }
 
@@ -90,14 +90,27 @@ const CustomerRequestDetail = () => {
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Produtos</p>
             <div className="space-y-2">
               {data.return_request_items.map((p) => (
-                <div key={p.id} className="flex gap-3 p-3 rounded-lg bg-muted/40">
-                  {p.product_image && <img src={p.product_image} alt={p.product_name} className="w-12 h-12 rounded-md object-cover" />}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{p.product_name}</p>
-                    <p className="text-xs text-muted-foreground">Motivo: {reasonLabel(p.reason)}</p>
-                    {p.notes && <p className="text-xs text-muted-foreground italic">"{p.notes}"</p>}
+                <div key={p.id} className="p-3 rounded-lg bg-muted/40 space-y-2">
+                  <div className="flex gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium">{p.product_name}</p>
+                      <p className="text-xs text-muted-foreground">Motivo: {reasonLabel(p.reason)}</p>
+                      {p.notes && <p className="text-xs text-muted-foreground italic">"{p.notes}"</p>}
+                    </div>
+                    <p className="text-sm font-semibold whitespace-nowrap">R$ {Number(p.price).toFixed(2)}</p>
                   </div>
-                  <p className="text-sm font-semibold whitespace-nowrap">R$ {Number(p.price).toFixed(2)}</p>
+                  {p.photos && p.photos.length > 0 && (
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Fotos enviadas</p>
+                      <div className="flex flex-wrap gap-2">
+                        {p.photos.map((url, i) => (
+                          <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                            <img src={url} alt={`Foto ${i + 1}`} className="w-16 h-16 rounded-md object-cover border border-border" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
