@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { mockOrders, type Product } from "@/data/mockData";
+import { type Product } from "@/data/mockData";
 import { Search, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,10 +22,18 @@ const CustomerNewRequest = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [step, setStep] = useState(0);
-  const [orderData, setOrderData] = useState<typeof mockOrders[0] | null>(null);
+  const [orderData, setOrderData] = useState<{
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    products: Product[];
+  } | null>(null);
   const [orderId, setOrderId] = useState("");
-  const [cpf, setCpf] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [searching, setSearching] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [reasons, setReasons] = useState<Record<string, { reason: string; notes: string }>>({});
   const [resolution, setResolution] = useState("");
@@ -34,21 +42,81 @@ const CustomerNewRequest = () => {
 
   const onlyDigits = (v: string) => v.replace(/\D/g, "");
 
-  const findOrder = (e: React.FormEvent) => {
+  const findOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!orderId.trim() || !cpf.trim()) {
-      setError("Informe o número do pedido e o CPF.");
+    const trimmedOrder = orderId.trim();
+    const phoneDigits = onlyDigits(phone);
+    if (!trimmedOrder || !phoneDigits) {
+      setError("Informe o número do pedido e os últimos 4 dígitos do telefone.");
       return;
     }
-    const order = mockOrders.find((o) => o.id.toLowerCase() === orderId.trim().toLowerCase());
-    if (!order) { setError("Pedido não encontrado. Tente AVN-20241201 ou AVN-20241205."); return; }
-    if (onlyDigits(order.customerCpf) !== onlyDigits(cpf)) {
-      setError("CPF não confere com o pedido informado.");
+    if (phoneDigits.length < 4) {
+      setError("Digite ao menos os últimos 4 dígitos do telefone.");
       return;
     }
-    setOrderData(order);
-    setStep(1);
+    setSearching(true);
+    try {
+      // Try exact match first, then with/without leading "#"
+      const variants = Array.from(new Set([trimmedOrder, trimmedOrder.replace(/^#/, ""), `#${trimmedOrder.replace(/^#/, "")}`]));
+      const { data: orders, error: qErr } = await supabase
+        .from("orders")
+        .select("id, order_number, customer_name, customer_email, customer_phone")
+        .in("order_number", variants)
+        .limit(1);
+      if (qErr) throw qErr;
+      const order = orders?.[0];
+      if (!order) {
+        setError("Pedido não encontrado. Verifique o número informado.");
+        return;
+      }
+      const orderPhoneDigits = onlyDigits(order.customer_phone ?? "");
+      const last4 = phoneDigits.slice(-4);
+      if (!orderPhoneDigits || !orderPhoneDigits.endsWith(last4)) {
+        setError("Os últimos 4 dígitos do telefone não conferem com o pedido.");
+        return;
+      }
+
+      // Load items
+      const { data: items, error: itErr } = await supabase
+        .from("order_items")
+        .select("id, product_name, product_sku, variant, quantity, price")
+        .eq("order_id", order.id);
+      if (itErr) throw itErr;
+
+      const products: Product[] = (items ?? []).map((it) => {
+        const [size, color] = (it.variant ?? "").split(" / ");
+        return {
+          id: it.id,
+          name: it.product_name,
+          image: "/placeholder.svg",
+          sku: it.product_sku ?? "",
+          size: size || undefined,
+          color: color || undefined,
+          price: Number(it.price) || 0,
+        };
+      });
+
+      if (products.length === 0) {
+        setError("Este pedido não possui itens cadastrados.");
+        return;
+      }
+
+      setOrderData({
+        id: order.id,
+        orderNumber: order.order_number,
+        customerName: order.customer_name ?? "",
+        customerEmail: order.customer_email ?? user?.email ?? "",
+        customerPhone: order.customer_phone ?? "",
+        products,
+      });
+      setStep(1);
+    } catch (err) {
+      console.error(err);
+      setError("Erro ao buscar pedido. Tente novamente.");
+    } finally {
+      setSearching(false);
+    }
   };
 
   const submit = async () => {
@@ -60,10 +128,10 @@ const CustomerNewRequest = () => {
 
       const { data: req, error: reqError } = await supabase.from("return_requests").insert({
         user_id: user.id,
-        order_id: orderData.id,
-        customer_name: orderData.customerName,
+        order_id: orderData.orderNumber,
+        customer_name: orderData.customerName || (user.email ?? ""),
         customer_email: user.email ?? orderData.customerEmail,
-        customer_cpf: orderData.customerCpf,
+        customer_cpf: null,
         status: "pending",
         type,
         resolution: resolution as "refund" | "voucher" | "exchange",
@@ -109,20 +177,22 @@ const CustomerNewRequest = () => {
                   <Search className="w-6 h-6 text-primary" />
                 </div>
                 <CardTitle className="text-xl">Encontre seu pedido</CardTitle>
-                <CardDescription>Informe o número do pedido e o CPF do titular para iniciar.</CardDescription>
+                <CardDescription>Informe o número do pedido e os últimos 4 dígitos do telefone cadastrado.</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={findOrder} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="orderId">Número do Pedido</Label>
-                    <Input id="orderId" placeholder="Ex: AVN-20241201" value={orderId} onChange={(e) => setOrderId(e.target.value)} />
+                    <Input id="orderId" placeholder="Ex: #1001" value={orderId} onChange={(e) => setOrderId(e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cpf">CPF do titular</Label>
-                    <Input id="cpf" placeholder="Ex: 123.456.789-00" value={cpf} onChange={(e) => setCpf(e.target.value)} />
+                    <Label htmlFor="phone">Últimos 4 dígitos do telefone</Label>
+                    <Input id="phone" inputMode="numeric" maxLength={15} placeholder="Ex: 1234" value={phone} onChange={(e) => setPhone(e.target.value)} />
                   </div>
                   {error && <p className="text-sm text-destructive">{error}</p>}
-                  <Button type="submit" className="w-full">Buscar Pedido</Button>
+                  <Button type="submit" className="w-full" disabled={searching}>
+                    {searching ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Buscando...</> : "Buscar Pedido"}
+                  </Button>
                 </form>
               </CardContent>
             </Card>
