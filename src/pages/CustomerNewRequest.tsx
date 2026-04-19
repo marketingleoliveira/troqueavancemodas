@@ -35,7 +35,7 @@ const CustomerNewRequest = () => {
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
-  const [reasons, setReasons] = useState<Record<string, { reason: string; notes: string }>>({});
+  const [reasons, setReasons] = useState<Record<string, { reason: string; notes: string; photos: string[] }>>({});
   const [resolution, setResolution] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
