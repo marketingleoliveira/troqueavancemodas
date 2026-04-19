@@ -47,11 +47,10 @@ export const PortalProductSelect = ({ products, onSubmit }: Props) => {
             }`}
           >
             <Checkbox checked={selected.has(p.id)} />
-            <img src={p.image} alt={p.name} className="w-14 h-14 rounded-md object-cover" />
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm truncate">{p.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {p.size && `Tam: ${p.size}`} {p.color && `• ${p.color}`}
+              <p className="text-xs text-muted-foreground truncate">
+                {[p.size && `Tam: ${p.size}`, p.color, p.sku && `SKU: ${p.sku}`].filter(Boolean).join(" • ")}
               </p>
             </div>
             <span className="text-sm font-semibold whitespace-nowrap">
