@@ -224,6 +224,12 @@ const CustomerNewRequest = () => {
                   <p>• Item em embalagem original, sem sinais de uso.</p>
                   <p>• Reembolsos em até 10 dias úteis.</p>
                 </div>
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
+                  <p className="font-semibold text-foreground">Próximos passos</p>
+                  <p className="text-muted-foreground">
+                    Após o envio, nossa equipe analisará sua solicitação e entrará em contato via <strong>chat</strong> no painel <strong>Minhas Solicitações</strong>. Se aprovada, você poderá conversar em tempo real com a equipe para tratar a devolução do produto.
+                  </p>
+                </div>
                 <div className="flex items-start gap-2">
                   <Checkbox id="accept" checked={accepted} onCheckedChange={(v) => setAccepted(v === true)} />
                   <label htmlFor="accept" className="text-sm cursor-pointer leading-snug">
