@@ -25,7 +25,6 @@ interface Props {
 const MIN_NOTES = 10;
 const MIN_PHOTOS = 1;
 const MAX_PHOTOS = 5;
-const MAX_FILE_MB = 5;
 
 export const PortalReason = ({ products, onSubmit, onBack }: Props) => {
   const { user } = useAuth();
@@ -59,10 +58,6 @@ export const PortalReason = ({ products, onSubmit, onBack }: Props) => {
       for (const file of list) {
         if (!file.type.startsWith("image/")) {
           toast.error(`"${file.name}" não é uma imagem válida.`);
-          continue;
-        }
-        if (file.size > MAX_FILE_MB * 1024 * 1024) {
-          toast.error(`"${file.name}" excede ${MAX_FILE_MB}MB.`);
           continue;
         }
         const ext = file.name.split(".").pop() || "jpg";
@@ -164,7 +159,7 @@ export const PortalReason = ({ products, onSubmit, onBack }: Props) => {
                 <Label>
                   Fotos <span className="text-destructive">*</span>{" "}
                   <span className="text-xs text-muted-foreground font-normal">
-                    ({photosCount}/{MAX_PHOTOS} • mín. {MIN_PHOTOS}, máx. {MAX_FILE_MB}MB cada)
+                    ({photosCount}/{MAX_PHOTOS} • mín. {MIN_PHOTOS} foto)
                   </span>
                 </Label>
                 {photosCount > 0 && (
