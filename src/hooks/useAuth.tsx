@@ -8,24 +8,28 @@ export function useAuth() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const fetchRole = (userId: string) => {
+      supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .then(({ data: roles }) => {
+          setIsAdmin(
+            roles?.some((r) => r.role === "super_admin" || r.role === "admin") ?? false
+          );
+        });
+    };
+
+    // IMPORTANT: never await inside onAuthStateChange — it deadlocks the Supabase client
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
-
         if (currentUser) {
-          const { data: roles } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", currentUser.id);
-
-          setIsAdmin(
-            roles?.some(r => r.role === "super_admin" || r.role === "admin") ?? false
-          );
+          setTimeout(() => fetchRole(currentUser.id), 0);
         } else {
           setIsAdmin(false);
         }
-
         setLoading(false);
       }
     );
@@ -33,21 +37,10 @@ export function useAuth() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-
       if (currentUser) {
-        supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", currentUser.id)
-          .then(({ data: roles }) => {
-            setIsAdmin(
-              roles?.some(r => r.role === "super_admin" || r.role === "admin") ?? false
-            );
-            setLoading(false);
-          });
-      } else {
-        setLoading(false);
+        fetchRole(currentUser.id);
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
