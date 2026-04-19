@@ -11,7 +11,10 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Package className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold tracking-tight">TroqueCommerce</span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-base font-bold tracking-tight">Avance Modas</span>
+              <span className="text-[10px] text-muted-foreground">Central de Trocas e Devoluções</span>
+            </div>
           </div>
         </div>
       </header>
@@ -23,20 +26,24 @@ const Index = () => {
           </div>
           <div className="space-y-3">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Gestão inteligente de <span className="text-primary">trocas e devoluções</span>
+              Central de <span className="text-primary">Trocas e Devoluções</span> da Avance Modas
             </h1>
             <p className="text-muted-foreground text-lg max-w-md mx-auto">
-              Plataforma SaaS de logística reversa para e-commerces. Retenha mais clientes, reduza custos.
+              Solicite a troca ou devolução do seu pedido feito em{" "}
+              <a href="https://www.avancemodas.com.br" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                avancemodas.com.br
+              </a>{" "}
+              de forma rápida e simples.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button size="lg" onClick={() => navigate("/auth")} className="gap-2">
-              <ShieldCheck className="w-5 h-5" /> Portal do Cliente
+              <ShieldCheck className="w-5 h-5" /> Solicitar Troca/Devolução
               <ArrowRight className="w-4 h-4" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => navigate("/admin")} className="gap-2">
-              <Store className="w-5 h-5" /> Painel do Lojista
+              <Store className="w-5 h-5" /> Acesso da Equipe Avance
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
@@ -44,7 +51,7 @@ const Index = () => {
       </main>
 
       <footer className="text-center py-4 text-xs text-muted-foreground">
-        © 2026 TroqueCommerce — Todos os direitos reservados
+        © 2026 Avance Modas — Central de Trocas e Devoluções
       </footer>
     </div>
   );

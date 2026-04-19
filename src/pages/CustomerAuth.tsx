@@ -89,8 +89,8 @@ const CustomerAuth = () => {
           <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
             <Package className="w-6 h-6 text-primary" />
           </div>
-          <CardTitle className="text-xl">Central de Trocas</CardTitle>
-          <CardDescription>Acesse sua conta ou cadastre-se</CardDescription>
+          <CardTitle className="text-xl">Avance Modas — Central de Trocas</CardTitle>
+          <CardDescription>Acesse para solicitar troca ou devolução do seu pedido</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">

@@ -30,7 +30,12 @@ export function AdminSidebar() {
       <SidebarContent>
         <div className={`p-4 flex items-center gap-2 ${collapsed ? "justify-center" : ""}`}>
           <Package className="w-6 h-6 text-sidebar-primary shrink-0" />
-          {!collapsed && <span className="font-bold text-sm text-sidebar-foreground tracking-tight">TroqueCommerce</span>}
+          {!collapsed && (
+            <div className="flex flex-col leading-tight">
+              <span className="font-bold text-sm text-sidebar-foreground tracking-tight">Avance Modas</span>
+              <span className="text-[10px] text-sidebar-foreground/60">Central de Trocas</span>
+            </div>
+          )}
         </div>
 
         <SidebarGroup>
