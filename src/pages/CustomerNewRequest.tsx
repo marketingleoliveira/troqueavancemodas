@@ -57,8 +57,9 @@ const CustomerNewRequest = () => {
     }
     setSearching(true);
     try {
-      // Try exact match first, then with/without leading "#"
-      const variants = Array.from(new Set([trimmedOrder, trimmedOrder.replace(/^#/, ""), `#${trimmedOrder.replace(/^#/, "")}`]));
+      const normalized = trimmedOrder.replace(/^#/, "");
+      const variants = [`#${normalized}`, normalized];
+      console.log("[findOrder] buscando", variants);
       const { data: orders, error: qErr } = await supabase
         .from("orders")
         .select("id, order_number, customer_name, customer_email, customer_phone")
@@ -66,6 +67,7 @@ const CustomerNewRequest = () => {
         .limit(1);
       if (qErr) throw qErr;
       const order = orders?.[0];
+      console.log("[findOrder] pedido", order);
       if (!order) {
         setError("Pedido não encontrado. Verifique o número informado.");
         return;
