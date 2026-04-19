@@ -91,7 +91,7 @@ const CustomerNewRequest = () => {
         return {
           id: it.id,
           name: it.product_name,
-          image: "/placeholder.svg",
+          image: "",
           sku: it.product_sku ?? "",
           size: size || undefined,
           color: color || undefined,
@@ -146,7 +146,6 @@ const CustomerNewRequest = () => {
         request_id: req.id,
         product_id: p.id,
         product_name: p.name,
-        product_image: p.image,
         product_sku: p.sku,
         size: p.size ?? null,
         color: p.color ?? null,

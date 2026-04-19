@@ -15,13 +15,13 @@ interface RequestItem {
   id: string;
   product_id: string | null;
   product_name: string;
-  product_image: string | null;
   product_sku: string | null;
   size: string | null;
   color: string | null;
   price: number;
   reason: string;
   notes: string | null;
+  photos: string[];
 }
 
 interface ReturnRequestRow {
