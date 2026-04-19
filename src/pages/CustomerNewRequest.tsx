@@ -153,6 +153,7 @@ const CustomerNewRequest = () => {
         price: p.price,
         reason: reasons[p.id]?.reason || "other",
         notes: reasons[p.id]?.notes || null,
+        photos: reasons[p.id]?.photos ?? [],
       }));
       const { error: itemsError } = await supabase.from("return_request_items").insert(items);
       if (itemsError) throw itemsError;
