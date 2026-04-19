@@ -29,7 +29,7 @@ const AdminLayout = () => {
           <header className="h-14 flex items-center justify-between border-b border-border bg-card px-4">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
-              <span className="text-sm font-medium text-muted-foreground">Painel do Lojista</span>
+              <span className="text-sm font-medium text-muted-foreground">Avance Modas — Painel de Trocas e Devoluções</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground hidden sm:block">{user.email}</span>

@@ -30,7 +30,10 @@ const CustomerLayout = () => {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Package className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold tracking-tight text-foreground">Minha Conta</span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-base font-bold tracking-tight text-foreground">Avance Modas</span>
+              <span className="text-[10px] text-muted-foreground">Central de Trocas e Devoluções</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground hidden sm:inline truncate max-w-[180px]">{user.email}</span>

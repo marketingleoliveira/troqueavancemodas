@@ -66,8 +66,8 @@ const AdminLogin = () => {
           <div className="flex justify-center mb-2">
             <Package className="w-10 h-10 text-primary" />
           </div>
-          <CardTitle className="text-2xl">TroqueCommerce</CardTitle>
-          <CardDescription>Acesse o painel administrativo</CardDescription>
+          <CardTitle className="text-2xl">Avance Modas</CardTitle>
+          <CardDescription>Painel de Trocas e Devoluções — Acesso restrito à equipe</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
