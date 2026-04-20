@@ -32,7 +32,6 @@ interface ReturnRequestRow {
   status: string;
   type: string;
   resolution: string;
-  tracking_code: string | null;
   created_at: string;
   return_request_items: RequestItem[];
 }
@@ -217,16 +216,6 @@ const AdminRequests = () => {
                     ))}
                   </div>
                 </div>
-
-                {selected.tracking_code && (
-                  <>
-                    <Separator />
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Código de Rastreio</p>
-                      <p className="font-mono font-medium">{selected.tracking_code}</p>
-                    </div>
-                  </>
-                )}
 
                 <Separator />
 

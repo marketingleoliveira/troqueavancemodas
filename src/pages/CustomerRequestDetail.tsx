@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { statusLabels, resolutionLabels } from "@/data/mockData";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { RequestChat } from "@/components/chat/RequestChat";
 
 interface Detail {
@@ -16,7 +16,6 @@ interface Detail {
   status: string;
   type: string;
   resolution: string;
-  tracking_code: string | null;
   created_at: string;
   return_request_items: {
     id: string;
@@ -73,16 +72,6 @@ const CustomerRequestDetail = () => {
             <p className="font-medium">Pedido {data.order_id}</p>
             <p className="text-xs text-muted-foreground">Aberta em {new Date(data.created_at).toLocaleDateString("pt-BR")}</p>
           </div>
-
-          {data.tracking_code && (
-            <div className="bg-muted/50 rounded-lg p-3 flex items-center gap-2">
-              <Package className="w-4 h-4 text-primary" />
-              <div>
-                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Código de Postagem</p>
-                <p className="font-mono text-sm font-semibold">{data.tracking_code}</p>
-              </div>
-            </div>
-          )}
 
           <Separator />
 

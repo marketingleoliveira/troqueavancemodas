@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, Copy, Package, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Product } from "@/data/mockData";
@@ -19,13 +19,11 @@ export const PortalConclusion = ({ resolution, orderData, selectedProducts, reas
   const [accepted, setAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [trackingCode, setTrackingCode] = useState("");
 
   const handleSubmit = async () => {
     if (!orderData) return;
     setSubmitting(true);
     try {
-      const code = "BR" + Math.random().toString().slice(2, 11) + "BR";
       const type = resolution === "exchange" ? "exchange" : "return";
 
       const { data: request, error: reqError } = await supabase
@@ -38,7 +36,6 @@ export const PortalConclusion = ({ resolution, orderData, selectedProducts, reas
           status: "pending",
           type,
           resolution: resolution as "refund" | "voucher" | "exchange",
-          tracking_code: code,
         })
         .select()
         .single();
@@ -60,7 +57,6 @@ export const PortalConclusion = ({ resolution, orderData, selectedProducts, reas
       const { error: itemsError } = await supabase.from("return_request_items").insert(items);
       if (itemsError) throw itemsError;
 
-      setTrackingCode(code);
       setSubmitted(true);
       toast.success("Solicitação registrada com sucesso!");
     } catch (err) {
@@ -80,30 +76,8 @@ export const PortalConclusion = ({ resolution, orderData, selectedProducts, reas
           </div>
           <CardTitle className="text-xl">Solicitação enviada!</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Sua solicitação foi registrada com sucesso. Acompanhe o status pelo e-mail cadastrado.
+            Sua solicitação foi registrada com sucesso. Nossa equipe entrará em contato via chat no painel <strong>Minhas Solicitações</strong>.
           </p>
-
-          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Código de Postagem</p>
-            <div className="flex items-center justify-center gap-2">
-              <Package className="w-5 h-5 text-primary" />
-              <span className="font-mono font-bold text-lg tracking-wider">{trackingCode}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => {
-                  navigator.clipboard.writeText(trackingCode);
-                  toast.success("Código copiado!");
-                }}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Leve este código a qualquer agência dos Correios para postar o produto.
-            </p>
-          </div>
 
           <Button variant="outline" onClick={onRestart} className="mt-4">
             Nova Solicitação
