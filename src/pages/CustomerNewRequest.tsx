@@ -125,7 +125,6 @@ const CustomerNewRequest = () => {
     if (!user || !orderData) return;
     setSubmitting(true);
     try {
-      const code = "BR" + Math.random().toString().slice(2, 11) + "BR";
       const type = resolution === "exchange" ? "exchange" : "return";
 
       const { data: req, error: reqError } = await supabase.from("return_requests").insert({
@@ -137,7 +136,6 @@ const CustomerNewRequest = () => {
         status: "pending",
         type,
         resolution: resolution as "refund" | "voucher" | "exchange",
-        tracking_code: code,
       }).select().single();
 
       if (reqError) throw reqError;
