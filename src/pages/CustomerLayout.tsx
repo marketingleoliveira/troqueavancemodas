@@ -3,7 +3,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NavLink } from "@/components/NavLink";
-import { Package, ClipboardList, Plus, LogOut } from "lucide-react";
+import { ClipboardList, Plus, LogOut } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const CustomerLayout = () => {
   const { user, loading, signOut } = useAuth();
@@ -29,9 +30,8 @@ const CustomerLayout = () => {
       <header className="border-b border-border/50 bg-card/60 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Package className="h-6 w-6 text-primary" />
+            <Logo className="h-8 w-auto" />
             <div className="flex flex-col leading-tight">
-              <span className="text-base font-bold tracking-tight text-foreground">Avance Modas</span>
               <span className="text-[10px] text-muted-foreground">Central de Trocas e Devoluções</span>
             </div>
           </div>
