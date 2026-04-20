@@ -218,7 +218,7 @@ const CustomerNewRequest = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-muted/50 rounded-lg p-4 text-xs text-muted-foreground space-y-1">
-                  <p className="font-semibold text-foreground text-sm mb-1">Política de Trocas e Devoluções</p>
+                  <p className="font-semibold text-foreground text-sm mb-1">Política de Devoluções</p>
                   <p>• Envio em até 7 dias após aprovação.</p>
                   <p>• Item em embalagem original, sem sinais de uso.</p>
                   <p>• Reembolsos em até 10 dias úteis.</p>
@@ -232,7 +232,7 @@ const CustomerNewRequest = () => {
                 <div className="flex items-start gap-2">
                   <Checkbox id="accept" checked={accepted} onCheckedChange={(v) => setAccepted(v === true)} />
                   <label htmlFor="accept" className="text-sm cursor-pointer leading-snug">
-                    Li e aceito a Política de Trocas e Devoluções.
+                    Li e aceito a Política de Devoluções.
                   </label>
                 </div>
                 <Button onClick={submit} disabled={!accepted || submitting} className="w-full">

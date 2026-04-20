@@ -33,7 +33,7 @@ export const PortalProductSelect = ({ products, onSubmit }: Props) => {
           <ShoppingBag className="w-6 h-6 text-primary" />
         </div>
         <CardTitle className="text-xl">Selecione os produtos</CardTitle>
-        <CardDescription>Marque os itens que deseja trocar ou devolver.</CardDescription>
+        <CardDescription>Marque os itens que deseja devolver.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {products.map((p) => (

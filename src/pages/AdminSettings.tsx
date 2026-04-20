@@ -21,7 +21,7 @@ const AdminSettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Políticas de Troca e Devolução</CardTitle>
+          <CardTitle className="text-base">Políticas de Devolução</CardTitle>
           <CardDescription>Defina os prazos para seus clientes.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

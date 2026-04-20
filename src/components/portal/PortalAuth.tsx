@@ -32,7 +32,7 @@ export const PortalAuth = ({ onSubmit }: PortalAuthProps) => {
         </div>
         <CardTitle className="text-xl">Encontre seu pedido</CardTitle>
         <CardDescription>
-          Informe os dados do pedido para iniciar a solicitação de troca ou devolução.
+          Informe os dados do pedido para iniciar a solicitação de devolução.
         </CardDescription>
       </CardHeader>
       <CardContent>
