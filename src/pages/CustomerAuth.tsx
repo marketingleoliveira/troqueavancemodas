@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
@@ -86,10 +87,8 @@ const CustomerAuth = () => {
     <div className="min-h-screen gradient-hero flex items-center justify-center p-4">
       <Card className="glass-card w-full max-w-md">
         <CardHeader className="text-center pb-2">
-          <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-            <Package className="w-6 h-6 text-primary" />
-          </div>
-          <CardTitle className="text-xl">Avance Modas — Central de Trocas</CardTitle>
+          <Logo className="h-12 w-auto mx-auto mb-3" />
+          <CardTitle className="text-xl">Central de Trocas e Devoluções</CardTitle>
           <CardDescription>Acesse para solicitar troca ou devolução do seu pedido</CardDescription>
         </CardHeader>
         <CardContent>

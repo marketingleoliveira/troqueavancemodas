@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminLogin = () => {
@@ -63,9 +64,7 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-2">
-            <Package className="w-10 h-10 text-primary" />
-          </div>
+          <Logo className="h-12 w-auto mx-auto mb-2" />
           <CardTitle className="text-2xl">Avance Modas</CardTitle>
           <CardDescription>Painel de Trocas e Devoluções — Acesso restrito à equipe</CardDescription>
         </CardHeader>
