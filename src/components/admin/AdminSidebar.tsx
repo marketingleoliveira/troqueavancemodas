@@ -1,5 +1,6 @@
-import { LayoutDashboard, ClipboardList, MessageCircle, Settings, Package } from "lucide-react";
+import { LayoutDashboard, ClipboardList, MessageCircle, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { Logo } from "@/components/Logo";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -29,7 +30,7 @@ export function AdminSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent>
         <div className={`p-4 flex items-center gap-2 ${collapsed ? "justify-center" : ""}`}>
-          <Package className="w-6 h-6 text-sidebar-primary shrink-0" />
+          <Logo invert className="h-7 w-auto shrink-0" />
           {!collapsed && (
             <div className="flex flex-col leading-tight">
               <span className="font-bold text-sm text-sidebar-foreground tracking-tight">Avance Modas</span>
