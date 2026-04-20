@@ -34,7 +34,7 @@ export function AdminSidebar() {
           {!collapsed && (
             <div className="flex flex-col leading-tight">
               <span className="font-bold text-sm text-sidebar-foreground tracking-tight">Avance Modas</span>
-              <span className="text-[10px] text-sidebar-foreground/60">Central de Trocas</span>
+              <span className="text-[10px] text-sidebar-foreground/60">Central de Devoluções</span>
             </div>
           )}
         </div>

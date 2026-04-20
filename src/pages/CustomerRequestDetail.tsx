@@ -66,7 +66,7 @@ const CustomerRequestDetail = () => {
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono text-xs text-muted-foreground">#{data.id.slice(0, 8)}</span>
             <Badge variant="secondary" className={`text-[10px] ${st.color}`}>{st.label}</Badge>
-            <Badge variant="outline" className="text-[10px]">{data.type === "exchange" ? "Troca" : "Devolução"}</Badge>
+            <Badge variant="outline" className="text-[10px]">Devolução</Badge>
             <Badge variant="outline" className="text-[10px]">{resolutionLabels[data.resolution]}</Badge>
           </div>
           <div className="text-sm">

@@ -88,8 +88,8 @@ const CustomerAuth = () => {
       <Card className="glass-card w-full max-w-md">
         <CardHeader className="text-center pb-2">
           <Logo className="h-12 w-auto mx-auto mb-3" />
-          <CardTitle className="text-xl">Central de Trocas e Devoluções</CardTitle>
-          <CardDescription>Acesse para solicitar troca ou devolução do seu pedido</CardDescription>
+          <CardTitle className="text-xl">Central de Devoluções</CardTitle>
+          <CardDescription>Acesse para solicitar a devolução do seu pedido</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">

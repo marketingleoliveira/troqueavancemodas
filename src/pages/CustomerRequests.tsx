@@ -44,7 +44,7 @@ const CustomerRequests = () => {
           <Inbox className="w-10 h-10 mx-auto text-muted-foreground opacity-50" />
           <div>
             <p className="font-medium">Você ainda não tem solicitações</p>
-            <p className="text-sm text-muted-foreground">Crie uma nova solicitação de troca ou devolução.</p>
+            <p className="text-sm text-muted-foreground">Crie uma nova solicitação de devolução.</p>
           </div>
           <Button asChild><Link to="/minha-conta/nova"><Plus className="w-4 h-4 mr-2" />Nova Solicitação</Link></Button>
         </CardContent>
@@ -67,7 +67,7 @@ const CustomerRequests = () => {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="font-mono text-xs text-muted-foreground">#{r.id.slice(0, 8)}</span>
                     <Badge variant="secondary" className={`text-[10px] ${st.color}`}>{st.label}</Badge>
-                    <Badge variant="outline" className="text-[10px]">{r.type === "exchange" ? "Troca" : "Devolução"}</Badge>
+                    <Badge variant="outline" className="text-[10px]">Devolução</Badge>
                   </div>
                   <p className="text-sm font-medium truncate">Pedido {r.order_id}</p>
                   <p className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("pt-BR")} · {r.return_request_items.length} {r.return_request_items.length === 1 ? "item" : "itens"}</p>

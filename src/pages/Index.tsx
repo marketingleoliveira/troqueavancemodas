@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, ShieldCheck, Store, RefreshCw, MessageCircle, Clock } from "lucide-react";
+import { ArrowRight, ShieldCheck, RefreshCw, MessageCircle, Clock } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
 const Index = () => {
@@ -28,11 +28,11 @@ const Index = () => {
           <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
             <Logo className="h-20 sm:h-24 w-auto mx-auto" />
             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05]">
-              Central de <span className="text-primary">Trocas</span>
-              <br className="hidden sm:block" /> e Devoluções
+              Central de <span className="text-primary">Devoluções</span>
+              <br className="hidden sm:block" /> Avance Modas
             </h1>
             <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto">
-              Solicite a troca ou devolução do seu pedido feito na{" "}
+              Solicite a devolução do seu pedido feito na{" "}
               <a
                 href="https://www.avancemodas.com.br"
                 target="_blank"
@@ -46,9 +46,9 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Action cards */}
+        {/* Action card */}
         <section className="container mx-auto px-4 pb-16">
-          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+          <div className="max-w-md mx-auto">
             <div className="group relative bg-card rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all border border-border/50 overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1 bg-foreground" />
               <div className="w-14 h-14 rounded-2xl bg-foreground text-background flex items-center justify-center mb-5">
@@ -56,28 +56,14 @@ const Index = () => {
               </div>
               <h2 className="text-2xl font-bold mb-2">Sou Cliente</h2>
               <p className="text-muted-foreground text-sm mb-6">
-                Solicite a troca ou devolução do seu pedido e acompanhe todo o processo em tempo real.
+                Solicite a devolução do seu pedido e acompanhe todo o processo em tempo real.
               </p>
               <Button
                 size="lg"
                 onClick={() => navigate("/auth")}
                 className="w-full gap-2 bg-foreground hover:bg-foreground/90 text-background"
               >
-                Solicitar Troca/Devolução <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <div className="group relative bg-card rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all border border-border/50 overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
-              <div className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center mb-5">
-                <Store className="w-7 h-7" />
-              </div>
-              <h2 className="text-2xl font-bold mb-2">Equipe Avance</h2>
-              <p className="text-muted-foreground text-sm mb-6">
-                Acesso restrito para administração das solicitações, atendimento e relatórios.
-              </p>
-              <Button size="lg" onClick={() => navigate("/admin")} className="w-full gap-2">
-                Acessar Painel <ArrowRight className="w-4 h-4" />
+                Solicitar Devolução <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -103,8 +89,9 @@ const Index = () => {
         </section>
       </main>
 
-      <footer className="border-t border-border/40 py-6 text-center text-xs text-muted-foreground">
-        © 2026 Avance Modas — Central de Trocas e Devoluções ·{" "}
+      <footer className="border-t border-border/40 py-6 text-center text-xs text-muted-foreground space-x-3">
+        <span>© 2026 Avance Modas — Central de Devoluções</span>
+        <span>·</span>
         <a
           href="https://www.avancemodas.com.br"
           target="_blank"
@@ -113,6 +100,13 @@ const Index = () => {
         >
           avancemodas.com.br
         </a>
+        <span>·</span>
+        <button
+          onClick={() => navigate("/admin")}
+          className="hover:text-primary underline-offset-4 hover:underline"
+        >
+          Acesso equipe
+        </button>
       </footer>
     </div>
   );

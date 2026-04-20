@@ -32,7 +32,7 @@ const CustomerLayout = () => {
           <div className="flex items-center gap-2">
             <Logo className="h-8 w-auto" />
             <div className="flex flex-col leading-tight">
-              <span className="text-[10px] text-muted-foreground">Central de Trocas e Devoluções</span>
+              <span className="text-[10px] text-muted-foreground">Central de Devoluções</span>
             </div>
           </div>
           <div className="flex items-center gap-2">

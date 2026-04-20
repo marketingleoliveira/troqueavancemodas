@@ -126,7 +126,7 @@ export const PortalConclusion = ({ resolution, orderData, selectedProducts, reas
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="bg-muted/50 rounded-lg p-4 text-xs text-muted-foreground space-y-2">
-          <p className="font-semibold text-foreground text-sm">Política de Trocas e Devoluções</p>
+          <p className="font-semibold text-foreground text-sm">Política de Devoluções</p>
           <p>• O produto deve ser enviado em até 7 dias após a aprovação da solicitação.</p>
           <p>• O item deve estar em sua embalagem original, sem sinais de uso.</p>
           <p>• Reembolsos serão processados em até 10 dias úteis após o recebimento.</p>
@@ -140,7 +140,7 @@ export const PortalConclusion = ({ resolution, orderData, selectedProducts, reas
             onCheckedChange={(v) => setAccepted(v === true)}
           />
           <label htmlFor="accept" className="text-sm cursor-pointer leading-snug">
-            Li e aceito a <span className="font-medium text-primary underline">Política de Trocas e Devoluções</span>.
+            Li e aceito a <span className="font-medium text-primary underline">Política de Devoluções</span>.
           </label>
         </div>
 

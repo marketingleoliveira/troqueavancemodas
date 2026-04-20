@@ -66,7 +66,7 @@ const AdminLogin = () => {
         <CardHeader className="text-center">
           <Logo className="h-12 w-auto mx-auto mb-2" />
           <CardTitle className="text-2xl">Avance Modas</CardTitle>
-          <CardDescription>Painel de Trocas e Devoluções — Acesso restrito à equipe</CardDescription>
+          <CardDescription>Painel de Devoluções — Acesso restrito à equipe</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
