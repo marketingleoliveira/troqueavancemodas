@@ -76,12 +76,32 @@ const AdminRequests = () => {
     fetchOrdersCount();
   }, []);
 
-  const updateStatus = async (id: string, status: "completed" | "rejected" | "awaiting_shipment") => {
-    const { error } = await supabase.from("return_requests").update({ status }).eq("id", id);
-    if (error) {
-      toast.error("Erro ao atualizar");
-      return;
-    }
+  const markProcedente = async (id: string) => {
+    setSubmitting(true);
+    const { error } = await supabase
+      .from("return_requests")
+      .update({ status: "received" })
+      .eq("id", id);
+    setSubmitting(false);
+    if (error) { toast.error("Erro ao atualizar"); return; }
+    toast.success("Solicitação procedente. Chat liberado para o cliente.");
+    setSelected(null);
+    fetchRequests();
+  };
+
+  const markImprocedente = async () => {
+    if (!selected) return;
+    if (!rejectReason.trim()) { toast.error("Informe o motivo da improcedência."); return; }
+    setSubmitting(true);
+    const { error } = await supabase
+      .from("return_requests")
+      .update({ status: "rejected", notes: rejectReason.trim() })
+      .eq("id", selected.id);
+    setSubmitting(false);
+    if (error) { toast.error("Erro ao registrar"); return; }
+    toast.success("Solicitação registrada como improcedente.");
+    setRejectOpen(false);
+    setRejectReason("");
     setSelected(null);
     fetchRequests();
   };
