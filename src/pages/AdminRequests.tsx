@@ -245,15 +245,29 @@ const AdminRequests = () => {
                 <Separator />
 
                 <div className="flex flex-col gap-2">
-                  <Button className="gap-2" onClick={() => { toast.success("Etiqueta gerada!"); updateStatus(selected.id, "awaiting_shipment"); }}>
-                    <Truck className="w-4 h-4" /> Aprovar e Gerar Etiqueta
+                  <Button
+                    className="gap-2"
+                    disabled={submitting || selected.status === "received" || selected.status === "rejected"}
+                    onClick={() => markProcedente(selected.id)}
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> PROCEDENTE
                   </Button>
-                  <Button variant="outline" className="gap-2" onClick={() => { toast.success("Vale-compras emitido!"); updateStatus(selected.id, "completed"); }}>
-                    <Gift className="w-4 h-4" /> Concluir / Emitir Vale
+                  <Button
+                    variant="destructive"
+                    className="gap-2"
+                    disabled={submitting || selected.status === "rejected"}
+                    onClick={() => { setRejectReason(selected.notes ?? ""); setRejectOpen(true); }}
+                  >
+                    <XCircle className="w-4 h-4" /> IMPROCEDENTE
                   </Button>
-                  <Button variant="destructive" className="gap-2" onClick={() => { toast.error("Solicitação rejeitada."); updateStatus(selected.id, "rejected"); }}>
-                    <XCircle className="w-4 h-4" /> Rejeitar Solicitação
-                  </Button>
+                  {selected.status === "received" && (
+                    <p className="text-xs text-muted-foreground text-center">Chat liberado para o cliente negociar a devolução.</p>
+                  )}
+                  {selected.status === "rejected" && selected.notes && (
+                    <div className="text-xs p-2 rounded-md bg-destructive/10 text-destructive">
+                      <span className="font-medium">Motivo improcedência:</span> {selected.notes}
+                    </div>
+                  )}
                 </div>
               </div>
             </>
