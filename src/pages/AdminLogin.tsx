@@ -20,9 +20,9 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
+    if (error || !signInData.user) {
       toast({
         title: "Erro ao entrar",
         description: "E-mail ou senha incorretos.",
@@ -32,21 +32,14 @@ const AdminLogin = () => {
       return;
     }
 
-    // Check if user has admin or super_admin role
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    // Check role via security definer function (avoids RLS timing issues)
+    const userId = signInData.user.id;
+    const [{ data: isSuperAdmin }, { data: isAdminRole }] = await Promise.all([
+      supabase.rpc("has_role", { _user_id: userId, _role: "super_admin" }),
+      supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
+    ]);
 
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id);
-
-    const isAdmin = roles?.some(r => r.role === "super_admin" || r.role === "admin");
-
-    if (!isAdmin) {
+    if (!isSuperAdmin && !isAdminRole) {
       await supabase.auth.signOut();
       toast({
         title: "Acesso negado",
@@ -57,7 +50,7 @@ const AdminLogin = () => {
       return;
     }
 
-    navigate("/admin");
+    navigate("/admin", { replace: true });
   };
 
   return (
