@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { User } from "@supabase/supabase-js";
+import type { Session, User } from "@supabase/supabase-js";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -8,42 +8,50 @@ export function useAuth() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const fetchRole = (userId: string) => {
-      supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .then(({ data: roles }) => {
-          setIsAdmin(
-            roles?.some((r) => r.role === "super_admin" || r.role === "admin") ?? false
-          );
-        });
+    let active = true;
+    let roleRequestId = 0;
+
+    const resolveAdminState = async (userId: string) => {
+      const requestId = ++roleRequestId;
+      setLoading(true);
+
+      const { data, error } = await supabase.rpc("is_admin", { _user_id: userId });
+
+      if (!active || requestId !== roleRequestId) return;
+
+      setIsAdmin(!error && !!data);
+      setLoading(false);
     };
 
-    // IMPORTANT: never await inside onAuthStateChange — it deadlocks the Supabase client
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        const currentUser = session?.user ?? null;
-        setUser(currentUser);
-        if (currentUser) {
-          setTimeout(() => fetchRole(currentUser.id), 0);
-        } else {
-          setIsAdmin(false);
-        }
-        setLoading(false);
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const applySession = (session: Session | null) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      if (currentUser) {
-        fetchRole(currentUser.id);
+
+      if (!currentUser) {
+        roleRequestId += 1;
+        setIsAdmin(false);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      void resolveAdminState(currentUser.id);
+    };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      applySession(session);
     });
 
-    return () => subscription.unsubscribe();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!active) return;
+      applySession(session);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
