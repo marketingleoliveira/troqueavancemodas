@@ -37,23 +37,35 @@ const CustomerRequestDetail = () => {
   const [data, setData] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchDetail = async () => {
+    if (!id) return;
+    const { data } = await supabase
+      .from("return_requests")
+      .select("*, return_request_items(*)")
+      .eq("id", id)
+      .maybeSingle();
+    setData(data as Detail | null);
+    setLoading(false);
+  };
+
   useEffect(() => {
     if (!id) return;
-    (async () => {
-      const { data } = await supabase
-        .from("return_requests")
-        .select("*, return_request_items(*)")
-        .eq("id", id)
-        .maybeSingle();
-      setData(data as Detail | null);
-      setLoading(false);
-    })();
+    fetchDetail();
+    const channel = supabase
+      .channel(`request-detail:${id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "return_requests", filter: `id=eq.${id}` },
+        () => fetchDetail(),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [id]);
 
   if (loading) return <Skeleton className="h-96 w-full" />;
   if (!data) return <Card><CardContent className="py-10 text-center text-muted-foreground">Solicitação não encontrada.</CardContent></Card>;
 
-  const st = statusLabels[data.status] ?? { label: data.status, color: "" };
+  const st = customerStatusLabels[data.status] ?? { label: data.status, color: "" };
 
   return (
     <div className="space-y-4">
