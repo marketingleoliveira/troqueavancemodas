@@ -79,6 +79,22 @@ const CustomerNewRequest = () => {
         return;
       }
 
+      // Bloqueia novas solicitações se já houver uma para o pedido
+      const { data: existing } = await supabase
+        .from("return_requests")
+        .select("id, status")
+        .eq("order_id", order.order_number)
+        .limit(1);
+      const prev = existing?.[0];
+      if (prev) {
+        if (prev.status === "rejected") {
+          setError("Este pedido teve uma solicitação considerada improcedente e não pode receber novas solicitações.");
+        } else {
+          setError("Já existe uma solicitação em andamento para este pedido.");
+        }
+        return;
+      }
+
       // Load items
       const { data: items, error: itErr } = await supabase
         .from("order_items")
@@ -224,7 +240,7 @@ const CustomerNewRequest = () => {
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm space-y-1">
                   <p className="font-semibold text-foreground">Próximos passos</p>
                   <p className="text-muted-foreground">
-                    Após o envio, nossa equipe analisará sua solicitação e entrará em contato via <strong>chat</strong> no painel <strong>Minhas Solicitações</strong>. Se aprovada, você poderá conversar em tempo real com a equipe para tratar a devolução do produto.
+                    Após o envio, nossa equipe analisará sua solicitação. Se a devolução for marcada como <strong>procedente</strong>, um <strong>chat com a equipe</strong> será liberado em <strong>Minhas Solicitações</strong> para negociar a devolução. Se for marcada como <strong>improcedente</strong>, a solicitação será cancelada e <strong>não será possível abrir uma nova</strong> para o mesmo pedido.
                   </p>
                 </div>
                 <div className="flex items-start gap-2">
