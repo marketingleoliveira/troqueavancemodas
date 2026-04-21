@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
-import { statusLabels, resolutionLabels } from "@/data/mockData";
+import { customerStatusLabels, resolutionLabels } from "@/data/mockData";
 import { ArrowLeft } from "lucide-react";
 import { RequestChat } from "@/components/chat/RequestChat";
 
