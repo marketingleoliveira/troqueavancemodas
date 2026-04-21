@@ -34,6 +34,7 @@ interface ReturnRequestRow {
   status: string;
   type: string;
   resolution: string;
+  notes: string | null;
   created_at: string;
   return_request_items: RequestItem[];
 }
