@@ -108,7 +108,27 @@ const CustomerRequestDetail = () => {
         </CardContent>
       </Card>
 
-      <RequestChat requestId={data.id} as="customer" />
+      {data.status === "rejected" ? (
+        <Card className="border-destructive/40">
+          <CardContent className="p-4 space-y-1">
+            <p className="text-sm font-semibold text-destructive">Solicitação considerada improcedente</p>
+            <p className="text-xs text-muted-foreground">
+              {data.notes || "A equipe não informou um motivo."}
+            </p>
+          </CardContent>
+        </Card>
+      ) : data.status === "pending" ? (
+        <Card>
+          <CardContent className="p-4 text-center">
+            <p className="text-sm font-medium">Aguardando análise da equipe</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              O chat será liberado assim que sua solicitação for considerada procedente.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <RequestChat requestId={data.id} as="customer" />
+      )}
     </div>
   );
 };
