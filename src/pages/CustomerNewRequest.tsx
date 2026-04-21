@@ -79,6 +79,22 @@ const CustomerNewRequest = () => {
         return;
       }
 
+      // Bloqueia novas solicitações se já houver uma para o pedido
+      const { data: existing } = await supabase
+        .from("return_requests")
+        .select("id, status")
+        .eq("order_id", order.order_number)
+        .limit(1);
+      const prev = existing?.[0];
+      if (prev) {
+        if (prev.status === "rejected") {
+          setError("Este pedido teve uma solicitação considerada improcedente e não pode receber novas solicitações.");
+        } else {
+          setError("Já existe uma solicitação em andamento para este pedido.");
+        }
+        return;
+      }
+
       // Load items
       const { data: items, error: itErr } = await supabase
         .from("order_items")
