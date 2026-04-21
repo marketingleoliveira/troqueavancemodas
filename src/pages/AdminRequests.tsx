@@ -277,6 +277,27 @@ const AdminRequests = () => {
       </Sheet>
 
       <OrdersImportDialog open={importOpen} onOpenChange={setImportOpen} onImported={fetchOrdersCount} />
+
+      <Dialog open={rejectOpen} onOpenChange={(o) => { if (!submitting) setRejectOpen(o); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Marcar como improcedente</DialogTitle>
+            <DialogDescription>Informe o motivo. Ele ficará registrado e visível ao cliente.</DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            placeholder="Ex: Produto fora do prazo de devolução, sinais de uso, etc."
+            rows={5}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectOpen(false)} disabled={submitting}>Cancelar</Button>
+            <Button variant="destructive" onClick={markImprocedente} disabled={submitting || !rejectReason.trim()}>
+              Confirmar improcedência
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
