@@ -142,6 +142,15 @@ export const statusLabels: Record<string, { label: string; color: string }> = {
   rejected: { label: "Rejeitado", color: "bg-destructive/10 text-destructive" },
 };
 
+// Labels exibidos no painel do cliente — mais explícitos sobre o fluxo de análise
+export const customerStatusLabels: Record<string, { label: string; color: string }> = {
+  pending: { label: "Em análise", color: "bg-warning/10 text-warning" },
+  awaiting_shipment: { label: "Aguardando Postagem", color: "bg-info/10 text-info" },
+  received: { label: "Procedente — chat liberado", color: "bg-success/10 text-success" },
+  completed: { label: "Concluído", color: "bg-success/10 text-success" },
+  rejected: { label: "Improcedente — cancelada", color: "bg-destructive/10 text-destructive" },
+};
+
 export const resolutionLabels: Record<string, string> = {
   refund: "Reembolso",
   voucher: "Vale-compras",
