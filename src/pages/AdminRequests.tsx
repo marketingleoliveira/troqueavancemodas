@@ -47,6 +47,9 @@ const AdminRequests = () => {
   const [selected, setSelected] = useState<ReturnRequestRow | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [ordersCount, setOrdersCount] = useState<number>(0);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchOrdersCount = async () => {
     const { count } = await supabase.from("orders").select("*", { count: "exact", head: true });
