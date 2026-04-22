@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowUpRight, Package, TrendingUp, Star, BarChart3 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import { MonthlyReportButton } from "@/components/admin/MonthlyReportButton";
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -39,9 +40,12 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Visão geral das trocas e devoluções</p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Visão geral das trocas e devoluções</p>
+        </div>
+        <MonthlyReportButton />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

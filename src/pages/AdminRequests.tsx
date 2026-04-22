@@ -8,7 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { CheckCircle2, XCircle, Eye, Inbox, Upload, Package } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { CheckCircle2, XCircle, Eye, Inbox, Upload, Package, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { OrdersImportDialog } from "@/components/admin/OrdersImportDialog";
@@ -51,6 +52,8 @@ const AdminRequests = () => {
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ReturnRequestRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchOrdersCount = async () => {
     const { count } = await supabase.from("orders").select("*", { count: "exact", head: true });
@@ -116,6 +119,21 @@ const AdminRequests = () => {
     fetchRequests();
   };
 
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    // remove dependentes primeiro (caso não haja cascade)
+    await supabase.from("request_messages").delete().eq("request_id", deleteTarget.id);
+    await supabase.from("return_request_items").delete().eq("request_id", deleteTarget.id);
+    const { error } = await supabase.from("return_requests").delete().eq("id", deleteTarget.id);
+    setDeleting(false);
+    if (error) { toast.error("Não foi possível excluir"); console.error(error); return; }
+    toast.success("Solicitação excluída.");
+    setDeleteTarget(null);
+    setSelected(null);
+    fetchRequests();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -177,9 +195,20 @@ const AdminRequests = () => {
                           </Badge>
                         </td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm" onClick={() => setSelected(req)} className="gap-1">
-                            <Eye className="w-3.5 h-3.5" /> Ver
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => setSelected(req)} className="gap-1">
+                              <Eye className="w-3.5 h-3.5" /> Ver
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => { e.stopPropagation(); setDeleteTarget(req); }}
+                              className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              title="Excluir solicitação"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -270,6 +299,14 @@ const AdminRequests = () => {
                   >
                     <XCircle className="w-4 h-4" /> IMPROCEDENTE
                   </Button>
+                  <Button
+                    variant="outline"
+                    className="gap-2 text-destructive hover:text-destructive"
+                    disabled={submitting}
+                    onClick={() => setDeleteTarget(selected)}
+                  >
+                    <Trash2 className="w-4 h-4" /> Excluir solicitação
+                  </Button>
                   {selected.status === "received" && (
                     <p className="text-xs text-muted-foreground text-center">Chat liberado para o cliente negociar a devolução.</p>
                   )}
@@ -307,6 +344,27 @@ const AdminRequests = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!deleting && !o) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir solicitação?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação é permanente. A solicitação {deleteTarget?.id.slice(0, 8)}, seus produtos e mensagens serão removidos do banco de dados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); confirmDelete(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Excluindo..." : "Excluir definitivamente"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
