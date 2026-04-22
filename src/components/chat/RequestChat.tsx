@@ -229,23 +229,33 @@ export const RequestChat = ({ requestId, as }: Props) => {
           hidden
           onChange={(e) => handleFiles(e.target.files)}
         />
-        {as === "admin" && (
+        {as === "admin" && quickReplies.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" size="icon" variant="outline" title="Respostas rápidas">
+              <Button type="button" size="icon" variant="outline" title="Respostas rápidas (Alt + tecla)">
                 <Zap className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-72 max-h-80 overflow-y-auto">
-              <DropdownMenuLabel>Respostas rápidas</DropdownMenuLabel>
+            <DropdownMenuContent align="start" className="w-80 max-h-96 overflow-y-auto">
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>Respostas rápidas</span>
+                <span className="text-[10px] font-normal text-muted-foreground">Alt + tecla</span>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {ADMIN_QUICK_REPLIES.map((q) => (
+              {quickReplies.map((q) => (
                 <DropdownMenuItem
-                  key={q.label}
-                  onClick={() => setInput((prev) => (prev ? prev + "\n" : "") + q.text)}
+                  key={q.id}
+                  onClick={() => insertQuickReply(q.text)}
                   className="flex flex-col items-start gap-0.5"
                 >
-                  <span className="text-xs font-medium">{q.label}</span>
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span className="text-xs font-medium truncate">{q.label}</span>
+                    {q.shortcut && (
+                      <kbd className="shrink-0 px-1.5 py-0.5 rounded border border-border bg-muted text-[10px] font-mono uppercase">
+                        Alt+{q.shortcut}
+                      </kbd>
+                    )}
+                  </div>
                   <span className="text-[11px] text-muted-foreground line-clamp-2">{q.text}</span>
                 </DropdownMenuItem>
               ))}
@@ -262,7 +272,7 @@ export const RequestChat = ({ requestId, as }: Props) => {
         >
           {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
         </Button>
-        <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escreva uma mensagem..." disabled={sending} />
+        <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escreva uma mensagem..." disabled={sending} />
         <Button type="submit" size="icon" disabled={sending || !input.trim()}>
           <Send className="w-4 h-4" />
         </Button>
