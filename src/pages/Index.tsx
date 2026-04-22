@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, ShieldCheck, RefreshCw, MessageCircle, Clock } from "lucide-react";
+import { ArrowRight, RefreshCw, MessageCircle, Clock } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import customerIcon from "@/assets/customer-icon.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -51,8 +52,8 @@ const Index = () => {
           <div className="max-w-md mx-auto">
             <div className="group relative bg-card rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all border border-border/50 overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1 bg-foreground" />
-              <div className="w-14 h-14 rounded-2xl bg-foreground text-background flex items-center justify-center mb-5">
-                <ShieldCheck className="w-7 h-7" />
+              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-5 overflow-hidden">
+                <img src={customerIcon} alt="Cliente" width={512} height={512} loading="lazy" className="w-12 h-12 object-contain" />
               </div>
               <h2 className="text-2xl font-bold mb-2">Sou Cliente</h2>
               <p className="text-muted-foreground text-sm mb-6">
