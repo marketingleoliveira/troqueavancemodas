@@ -344,6 +344,27 @@ const AdminRequests = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!deleting && !o) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir solicitação?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação é permanente. A solicitação {deleteTarget?.id.slice(0, 8)}, seus produtos e mensagens serão removidos do banco de dados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); confirmDelete(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Excluindo..." : "Excluir definitivamente"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
