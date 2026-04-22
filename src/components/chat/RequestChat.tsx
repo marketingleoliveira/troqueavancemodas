@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { loadQuickReplies, QuickReply } from "@/lib/quickReplies";
 
 interface Message {
   id: string;
