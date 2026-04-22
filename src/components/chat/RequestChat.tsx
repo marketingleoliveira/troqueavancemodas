@@ -1,11 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Send, MessageCircle, Paperclip, Loader2 } from "lucide-react";
+import { Send, MessageCircle, Paperclip, Loader2, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Message {
   id: string;
@@ -25,6 +33,17 @@ const IMAGE_PREFIX = "[image]";
 const isImageMessage = (content: string) => content.startsWith(IMAGE_PREFIX);
 const getImageUrl = (content: string) => content.slice(IMAGE_PREFIX.length).trim();
 
+const ADMIN_QUICK_REPLIES = [
+  { label: "👋 Saudação", text: "Olá! Sou da equipe Avance Modas. Estou à disposição para ajudar com sua devolução." },
+  { label: "📦 Solicitar postagem", text: "Para darmos sequência, por favor poste o produto nos Correios e nos envie o código de rastreio aqui no chat." },
+  { label: "🔍 Recebido — em análise", text: "Recebemos seu produto no nosso CD e ele já está em análise pela equipe de qualidade. Em breve retornamos." },
+  { label: "✅ Aprovado — vale-compras", text: "Sua devolução foi aprovada! Em até 2 dias úteis enviaremos um vale-compras no valor integral por e-mail." },
+  { label: "💳 Aprovado — reembolso", text: "Sua devolução foi aprovada! O estorno será feito no mesmo cartão/Pix em até 7 dias úteis." },
+  { label: "🔁 Aprovado — troca", text: "Sua troca foi aprovada! Já estamos separando o novo produto e enviaremos o código de rastreio em breve." },
+  { label: "❓ Pedir mais fotos", text: "Para avançarmos, poderia nos enviar fotos adicionais do produto, mostrando a etiqueta e o ponto do problema?" },
+  { label: "🙏 Encerramento", text: "Caso surja qualquer dúvida, estamos aqui. Obrigado pela paciência e pela confiança na Avance Modas!" },
+];
+
 export const RequestChat = ({ requestId, as }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +55,8 @@ export const RequestChat = ({ requestId, as }: Props) => {
 
   useEffect(() => {
     let mounted = true;
+    setLoading(true);
+    setMessages([]);
 
     (async () => {
       const { data } = await supabase
@@ -116,10 +137,10 @@ export const RequestChat = ({ requestId, as }: Props) => {
   };
 
   return (
-    <div className="flex flex-col h-[420px] border border-border rounded-lg overflow-hidden bg-card">
+    <div className="flex flex-col h-[480px] border border-border rounded-lg overflow-hidden bg-card">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/40">
         <MessageCircle className="w-4 h-4 text-primary" />
-        <span className="text-sm font-medium">Chat com a equipe</span>
+        <span className="text-sm font-medium">Chat com {as === "admin" ? "o cliente" : "a equipe"}</span>
         <span className="ml-auto text-[10px] text-muted-foreground">Tempo real</span>
       </div>
 
@@ -173,6 +194,29 @@ export const RequestChat = ({ requestId, as }: Props) => {
           hidden
           onChange={(e) => handleFiles(e.target.files)}
         />
+        {as === "admin" && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button type="button" size="icon" variant="outline" title="Respostas rápidas">
+                <Zap className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-72 max-h-80 overflow-y-auto">
+              <DropdownMenuLabel>Respostas rápidas</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {ADMIN_QUICK_REPLIES.map((q) => (
+                <DropdownMenuItem
+                  key={q.label}
+                  onClick={() => setInput((prev) => (prev ? prev + "\n" : "") + q.text)}
+                  className="flex flex-col items-start gap-0.5"
+                >
+                  <span className="text-xs font-medium">{q.label}</span>
+                  <span className="text-[11px] text-muted-foreground line-clamp-2">{q.text}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         <Button
           type="button"
           size="icon"
