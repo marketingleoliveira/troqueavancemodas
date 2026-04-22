@@ -34,25 +34,59 @@ const IMAGE_PREFIX = "[image]";
 const isImageMessage = (content: string) => content.startsWith(IMAGE_PREFIX);
 const getImageUrl = (content: string) => content.slice(IMAGE_PREFIX.length).trim();
 
-const ADMIN_QUICK_REPLIES = [
-  { label: "👋 Saudação", text: "Olá! Sou da equipe Avance Modas. Estou à disposição para ajudar com sua devolução." },
-  { label: "📦 Solicitar postagem", text: "Para darmos sequência, por favor poste o produto nos Correios e nos envie o código de rastreio aqui no chat." },
-  { label: "🔍 Recebido — em análise", text: "Recebemos seu produto no nosso CD e ele já está em análise pela equipe de qualidade. Em breve retornamos." },
-  { label: "✅ Aprovado — vale-compras", text: "Sua devolução foi aprovada! Em até 2 dias úteis enviaremos um vale-compras no valor integral por e-mail." },
-  { label: "💳 Aprovado — reembolso", text: "Sua devolução foi aprovada! O estorno será feito no mesmo cartão/Pix em até 7 dias úteis." },
-  { label: "🔁 Aprovado — troca", text: "Sua troca foi aprovada! Já estamos separando o novo produto e enviaremos o código de rastreio em breve." },
-  { label: "❓ Pedir mais fotos", text: "Para avançarmos, poderia nos enviar fotos adicionais do produto, mostrando a etiqueta e o ponto do problema?" },
-  { label: "🙏 Encerramento", text: "Caso surja qualquer dúvida, estamos aqui. Obrigado pela paciência e pela confiança na Avance Modas!" },
-];
-
 export const RequestChat = ({ requestId, as }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Carrega respostas rápidas (apenas no painel admin) + sincroniza com edições em /admin/settings
+  useEffect(() => {
+    if (as !== "admin") return;
+    const sync = () => setQuickReplies(loadQuickReplies());
+    sync();
+    window.addEventListener("quick-replies:changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("quick-replies:changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [as]);
+
+  const shortcutMap = useMemo(() => {
+    const map = new Map<string, QuickReply>();
+    quickReplies.forEach((q) => {
+      const sc = (q.shortcut || "").toLowerCase();
+      if (sc) map.set(sc, q);
+    });
+    return map;
+  }, [quickReplies]);
+
+  const insertQuickReply = (text: string) => {
+    setInput((prev) => (prev ? prev + "\n" : "") + text);
+    inputRef.current?.focus();
+  };
+
+  // Atalhos Alt + tecla — apenas para a equipe
+  useEffect(() => {
+    if (as !== "admin" || shortcutMap.size === 0) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const key = e.key.toLowerCase();
+      const match = shortcutMap.get(key);
+      if (!match) return;
+      e.preventDefault();
+      insertQuickReply(match.text);
+      toast.success(`Modelo "${match.label}" inserido (Alt+${key.toUpperCase()})`);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [as, shortcutMap]);
 
   useEffect(() => {
     let mounted = true;
