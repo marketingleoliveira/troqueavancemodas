@@ -22,6 +22,8 @@ export const MonthlyReportButton = () => {
   const generate = async () => {
     setLoading(true);
     try {
+      const { default: jsPDF } = await import("jspdf");
+      const { default: autoTable } = await import("jspdf-autotable");
       const [year, m] = month.split("-").map(Number);
       const start = new Date(year, m - 1, 1);
       const end = new Date(year, m, 1);
