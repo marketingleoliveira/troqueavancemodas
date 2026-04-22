@@ -75,6 +75,15 @@ const AdminRequests = () => {
   useEffect(() => {
     fetchRequests();
     fetchOrdersCount();
+    const channel = supabase
+      .channel("admin-requests")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "return_requests" },
+        () => fetchRequests(),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const markProcedente = async (id: string) => {
