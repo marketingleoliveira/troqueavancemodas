@@ -63,7 +63,7 @@ const AdminChats = () => {
 
   const selected = conversations.find((c) => c.id === selectedId) ?? null;
 
-  const updateStatus = async (status: string, successMsg: string) => {
+  const updateStatus = async (status: "awaiting_shipment" | "completed", successMsg: string) => {
     if (!selected) return;
     setUpdating(true);
     const { error } = await supabase.from("return_requests").update({ status }).eq("id", selected.id);
