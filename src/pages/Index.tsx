@@ -16,9 +16,9 @@ const Index = () => {
             href="https://www.avancemodas.com.br"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors"
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-foreground hover:text-primary transition-colors"
           >
-            avancemodas.com.br ↗
+            VOLTAR À LOJA VIRTUAL ↗
           </a>
         </div>
       </header>
