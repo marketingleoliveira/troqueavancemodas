@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Upload, Palette, Save } from "lucide-react";
 import { toast } from "sonner";
+import { QuickRepliesManager } from "@/components/admin/QuickRepliesManager";
 
 const AdminSettings = () => {
   const [returnDays, setReturnDays] = useState("30");
@@ -72,6 +73,8 @@ const AdminSettings = () => {
           </div>
         </CardContent>
       </Card>
+
+      <QuickRepliesManager />
 
       <Button
         className="gap-2"
