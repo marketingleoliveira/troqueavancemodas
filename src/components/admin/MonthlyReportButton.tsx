@@ -7,8 +7,7 @@ import { FileDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { statusLabels, resolutionLabels } from "@/data/mockData";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+// jsPDF is dynamically imported inside generate() to keep it out of the initial bundle
 
 const reasonLabel = (r: string) =>
   r === "defect" ? "Defeito" : r === "wrong_size" ? "Tamanho errado" : r === "regret" ? "Arrependimento" : "Outro";
@@ -23,6 +22,8 @@ export const MonthlyReportButton = () => {
   const generate = async () => {
     setLoading(true);
     try {
+      const { default: jsPDF } = await import("jspdf");
+      const { default: autoTable } = await import("jspdf-autotable");
       const [year, m] = month.split("-").map(Number);
       const start = new Date(year, m - 1, 1);
       const end = new Date(year, m, 1);
