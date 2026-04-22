@@ -299,6 +299,14 @@ const AdminRequests = () => {
                   >
                     <XCircle className="w-4 h-4" /> IMPROCEDENTE
                   </Button>
+                  <Button
+                    variant="outline"
+                    className="gap-2 text-destructive hover:text-destructive"
+                    disabled={submitting}
+                    onClick={() => setDeleteTarget(selected)}
+                  >
+                    <Trash2 className="w-4 h-4" /> Excluir solicitação
+                  </Button>
                   {selected.status === "received" && (
                     <p className="text-xs text-muted-foreground text-center">Chat liberado para o cliente negociar a devolução.</p>
                   )}
