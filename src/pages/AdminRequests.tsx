@@ -195,9 +195,20 @@ const AdminRequests = () => {
                           </Badge>
                         </td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm" onClick={() => setSelected(req)} className="gap-1">
-                            <Eye className="w-3.5 h-3.5" /> Ver
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => setSelected(req)} className="gap-1">
+                              <Eye className="w-3.5 h-3.5" /> Ver
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => { e.stopPropagation(); setDeleteTarget(req); }}
+                              className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              title="Excluir solicitação"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     );
