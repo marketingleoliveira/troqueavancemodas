@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { loadQuickReplies, QuickReply } from "@/lib/quickReplies";
 
 interface Message {
   id: string;
@@ -33,25 +34,59 @@ const IMAGE_PREFIX = "[image]";
 const isImageMessage = (content: string) => content.startsWith(IMAGE_PREFIX);
 const getImageUrl = (content: string) => content.slice(IMAGE_PREFIX.length).trim();
 
-const ADMIN_QUICK_REPLIES = [
-  { label: "👋 Saudação", text: "Olá! Sou da equipe Avance Modas. Estou à disposição para ajudar com sua devolução." },
-  { label: "📦 Solicitar postagem", text: "Para darmos sequência, por favor poste o produto nos Correios e nos envie o código de rastreio aqui no chat." },
-  { label: "🔍 Recebido — em análise", text: "Recebemos seu produto no nosso CD e ele já está em análise pela equipe de qualidade. Em breve retornamos." },
-  { label: "✅ Aprovado — vale-compras", text: "Sua devolução foi aprovada! Em até 2 dias úteis enviaremos um vale-compras no valor integral por e-mail." },
-  { label: "💳 Aprovado — reembolso", text: "Sua devolução foi aprovada! O estorno será feito no mesmo cartão/Pix em até 7 dias úteis." },
-  { label: "🔁 Aprovado — troca", text: "Sua troca foi aprovada! Já estamos separando o novo produto e enviaremos o código de rastreio em breve." },
-  { label: "❓ Pedir mais fotos", text: "Para avançarmos, poderia nos enviar fotos adicionais do produto, mostrando a etiqueta e o ponto do problema?" },
-  { label: "🙏 Encerramento", text: "Caso surja qualquer dúvida, estamos aqui. Obrigado pela paciência e pela confiança na Avance Modas!" },
-];
-
 export const RequestChat = ({ requestId, as }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Carrega respostas rápidas (apenas no painel admin) + sincroniza com edições em /admin/settings
+  useEffect(() => {
+    if (as !== "admin") return;
+    const sync = () => setQuickReplies(loadQuickReplies());
+    sync();
+    window.addEventListener("quick-replies:changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("quick-replies:changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [as]);
+
+  const shortcutMap = useMemo(() => {
+    const map = new Map<string, QuickReply>();
+    quickReplies.forEach((q) => {
+      const sc = (q.shortcut || "").toLowerCase();
+      if (sc) map.set(sc, q);
+    });
+    return map;
+  }, [quickReplies]);
+
+  const insertQuickReply = (text: string) => {
+    setInput((prev) => (prev ? prev + "\n" : "") + text);
+    inputRef.current?.focus();
+  };
+
+  // Atalhos Alt + tecla — apenas para a equipe
+  useEffect(() => {
+    if (as !== "admin" || shortcutMap.size === 0) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const key = e.key.toLowerCase();
+      const match = shortcutMap.get(key);
+      if (!match) return;
+      e.preventDefault();
+      insertQuickReply(match.text);
+      toast.success(`Modelo "${match.label}" inserido (Alt+${key.toUpperCase()})`);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [as, shortcutMap]);
 
   useEffect(() => {
     let mounted = true;
@@ -194,23 +229,33 @@ export const RequestChat = ({ requestId, as }: Props) => {
           hidden
           onChange={(e) => handleFiles(e.target.files)}
         />
-        {as === "admin" && (
+        {as === "admin" && quickReplies.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" size="icon" variant="outline" title="Respostas rápidas">
+              <Button type="button" size="icon" variant="outline" title="Respostas rápidas (Alt + tecla)">
                 <Zap className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-72 max-h-80 overflow-y-auto">
-              <DropdownMenuLabel>Respostas rápidas</DropdownMenuLabel>
+            <DropdownMenuContent align="start" className="w-80 max-h-96 overflow-y-auto">
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>Respostas rápidas</span>
+                <span className="text-[10px] font-normal text-muted-foreground">Alt + tecla</span>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {ADMIN_QUICK_REPLIES.map((q) => (
+              {quickReplies.map((q) => (
                 <DropdownMenuItem
-                  key={q.label}
-                  onClick={() => setInput((prev) => (prev ? prev + "\n" : "") + q.text)}
+                  key={q.id}
+                  onClick={() => insertQuickReply(q.text)}
                   className="flex flex-col items-start gap-0.5"
                 >
-                  <span className="text-xs font-medium">{q.label}</span>
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span className="text-xs font-medium truncate">{q.label}</span>
+                    {q.shortcut && (
+                      <kbd className="shrink-0 px-1.5 py-0.5 rounded border border-border bg-muted text-[10px] font-mono uppercase">
+                        Alt+{q.shortcut}
+                      </kbd>
+                    )}
+                  </div>
                   <span className="text-[11px] text-muted-foreground line-clamp-2">{q.text}</span>
                 </DropdownMenuItem>
               ))}
@@ -227,7 +272,7 @@ export const RequestChat = ({ requestId, as }: Props) => {
         >
           {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
         </Button>
-        <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escreva uma mensagem..." disabled={sending} />
+        <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escreva uma mensagem..." disabled={sending} />
         <Button type="submit" size="icon" disabled={sending || !input.trim()}>
           <Send className="w-4 h-4" />
         </Button>
