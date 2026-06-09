@@ -11,6 +11,15 @@ interface Props {
 
 const options = [
   {
+    id: "exchange",
+    icon: RefreshCw,
+    title: "Trocar por outra peça",
+    description: "Escolha outro produto de valor equivalente.",
+    note: "Sujeito à disponibilidade de estoque",
+    noteIcon: Clock,
+    recommended: true,
+  },
+  {
     id: "refund",
     icon: Banknote,
     title: "Devolução",
