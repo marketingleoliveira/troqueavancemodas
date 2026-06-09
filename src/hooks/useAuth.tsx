@@ -10,10 +10,12 @@ export function useAuth() {
   useEffect(() => {
     let active = true;
     let roleRequestId = 0;
+    let currentUserId: string | null = null;
+    let initialized = false;
 
-    const resolveAdminState = async (userId: string) => {
+    const resolveAdminState = async (userId: string, withLoading: boolean) => {
       const requestId = ++roleRequestId;
-      setLoading(true);
+      if (withLoading) setLoading(true);
 
       const { data, error } = await supabase.rpc("is_admin", { _user_id: userId });
 
@@ -24,17 +26,30 @@ export function useAuth() {
     };
 
     const applySession = (session: Session | null) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
+      const nextUser = session?.user ?? null;
+      const nextId = nextUser?.id ?? null;
+      const userChanged = nextId !== currentUserId;
+      const isInitial = !initialized;
+      initialized = true;
 
-      if (!currentUser) {
+      // Skip re-renders/role refetch on token refresh for the same user
+      // (prevents wizard state loss after the mobile file picker backgrounds the page).
+      if (!userChanged && !isInitial) {
+        setLoading(false);
+        return;
+      }
+
+      currentUserId = nextId;
+      setUser(nextUser);
+
+      if (!nextUser) {
         roleRequestId += 1;
         setIsAdmin(false);
         setLoading(false);
         return;
       }
 
-      void resolveAdminState(currentUser.id);
+      void resolveAdminState(nextUser.id, isInitial);
     };
 
     const {
