@@ -257,9 +257,20 @@ const AdminRequests = () => {
                     {selected.return_request_items.map((p) => (
                       <div key={p.id} className="p-3 rounded-lg bg-muted/50 space-y-2">
                         <div className="flex gap-3">
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium">{p.product_name}</p>
-                            <p className="text-xs text-muted-foreground">Motivo: {reasonLabel(p.reason)}</p>
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                              {p.product_sku && (
+                                <Badge variant="outline" className="text-[10px] font-mono">SKU: {p.product_sku}</Badge>
+                              )}
+                              {p.size && (
+                                <Badge variant="outline" className="text-[10px]">Tam: {p.size}</Badge>
+                              )}
+                              {p.color && (
+                                <Badge variant="outline" className="text-[10px]">Cor: {p.color}</Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1.5">Motivo: {reasonLabel(p.reason)}</p>
                             {p.notes && <p className="text-xs text-muted-foreground italic mt-0.5">"{p.notes}"</p>}
                           </div>
                           <p className="text-sm font-semibold whitespace-nowrap">R$ {Number(p.price).toFixed(2)}</p>
