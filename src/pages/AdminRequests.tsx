@@ -191,7 +191,7 @@ const AdminRequests = () => {
                         </td>
                         <td className="p-3 hidden sm:table-cell">
                           <Badge variant="outline" className="text-[10px]">
-                            Devolução
+                            {resolutionLabels[req.resolution] ?? "Devolução"}
                           </Badge>
                         </td>
                         <td className="p-3">
