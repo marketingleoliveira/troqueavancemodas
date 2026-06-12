@@ -10,6 +10,7 @@ import { MessageCircle, Inbox, Search, CheckCircle2, Truck, Mail, Phone } from "
 import { cn } from "@/lib/utils";
 import { RequestChat } from "@/components/chat/RequestChat";
 import { toast } from "sonner";
+import { CaseReportDialog } from "@/components/admin/CaseReportDialog";
 
 interface ConvRow {
   id: string;
@@ -160,6 +161,14 @@ const AdminChats = () => {
                         <Truck className="w-3.5 h-3.5" /> Aguardando postagem
                       </Button>
                     )}
+                    <CaseReportDialog
+                      requestId={selected.id}
+                      customerName={selected.customer_name}
+                      customerEmail={selected.customer_email}
+                      orderId={selected.order_id}
+                      status={selected.status}
+                      resolution={selected.resolution}
+                    />
                     {selected.status !== "completed" && (
                       <Button size="sm" className="gap-1.5" disabled={updating} onClick={() => updateStatus("completed", "Devolução concluída.")}>
                         <CheckCircle2 className="w-3.5 h-3.5" /> Concluir devolução
