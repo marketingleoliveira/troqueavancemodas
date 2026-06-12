@@ -13,18 +13,20 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAdminNotifications } from "@/hooks/useAdminNotifications";
 
 const items = [
-  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Solicitações", url: "/admin/requests", icon: ClipboardList },
-  { title: "Atendimento", url: "/admin/chats", icon: MessageCircle },
-  { title: "Configurações", url: "/admin/settings", icon: Settings },
+  { title: "Dashboard", url: "/admin", icon: LayoutDashboard, key: "dashboard" },
+  { title: "Solicitações", url: "/admin/requests", icon: ClipboardList, key: "requests" },
+  { title: "Atendimento", url: "/admin/chats", icon: MessageCircle, key: "chats" },
+  { title: "Configurações", url: "/admin/settings", icon: Settings, key: "settings" },
 ];
 
 export function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const { unread } = useAdminNotifications();
 
   return (
     <Sidebar collapsible="icon">
@@ -43,21 +45,29 @@ export function AdminSidebar() {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/admin"}
-                      className="hover:bg-sidebar-accent/50"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const showBadge = item.key === "chats" && unread > 0;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.url}
+                        end={item.url === "/admin"}
+                        className="hover:bg-sidebar-accent/50 relative"
+                        activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                      >
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                        {showBadge && (
+                          <span className={`${collapsed ? "absolute top-1 right-1" : "ml-auto"} min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center`}>
+                            {unread > 9 ? "9+" : unread}
+                          </span>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
