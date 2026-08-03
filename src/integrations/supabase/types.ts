@@ -140,6 +140,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          edited_at: string | null
           id: string
           request_id: string
           sender: Database["public"]["Enums"]["message_sender"]
@@ -148,6 +149,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          edited_at?: string | null
           id?: string
           request_id: string
           sender: Database["public"]["Enums"]["message_sender"]
@@ -156,6 +158,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          edited_at?: string | null
           id?: string
           request_id?: string
           sender?: Database["public"]["Enums"]["message_sender"]
