@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Send, MessageCircle, Paperclip, Loader2, Zap } from "lucide-react";
+import { Send, MessageCircle, Paperclip, Loader2, Zap, Pencil, Check, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -21,6 +22,7 @@ interface Message {
   sender: "customer" | "admin";
   content: string;
   created_at: string;
+  edited_at?: string | null;
 }
 
 interface Props {
@@ -40,6 +42,9 @@ export const RequestChat = ({ requestId, as }: Props) => {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
   const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -96,7 +101,7 @@ export const RequestChat = ({ requestId, as }: Props) => {
     (async () => {
       const { data } = await supabase
         .from("request_messages")
-        .select("id, sender, content, created_at")
+        .select("id, sender, content, created_at, edited_at")
         .eq("request_id", requestId)
         .order("created_at", { ascending: true });
       if (mounted) {
@@ -110,6 +115,10 @@ export const RequestChat = ({ requestId, as }: Props) => {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "request_messages", filter: `request_id=eq.${requestId}` }, (payload) => {
         const m = payload.new as Message;
         setMessages((prev) => prev.some((x) => x.id === m.id) ? prev : [...prev, m]);
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "request_messages", filter: `request_id=eq.${requestId}` }, (payload) => {
+        const m = payload.new as Message;
+        setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, ...m } : x)));
       })
       .subscribe();
 
@@ -171,6 +180,31 @@ export const RequestChat = ({ requestId, as }: Props) => {
     }
   };
 
+  const startEdit = (m: Message) => {
+    setEditingId(m.id);
+    setEditingText(m.content);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingText("");
+  };
+
+  const saveEdit = async (id: string) => {
+    const text = editingText.trim();
+    if (!text) { toast.error("A mensagem não pode ficar vazia"); return; }
+    setSavingEdit(true);
+    const { error } = await supabase
+      .from("request_messages")
+      .update({ content: text, edited_at: new Date().toISOString() })
+      .eq("id", id);
+    setSavingEdit(false);
+    if (error) { toast.error("Não foi possível editar a mensagem"); return; }
+    setMessages((prev) => prev.map((x) => (x.id === id ? { ...x, content: text, edited_at: new Date().toISOString() } : x)));
+    cancelEdit();
+    toast.success("Mensagem editada");
+  };
+
   return (
     <div className="flex flex-col h-[480px] border border-border rounded-lg overflow-hidden bg-card">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/40">
@@ -206,14 +240,52 @@ export const RequestChat = ({ requestId, as }: Props) => {
                       className="block max-h-64 w-auto object-contain bg-muted"
                     />
                   </a>
+                ) : editingId === m.id ? (
+                  <div className="w-[85%] space-y-1">
+                    <Textarea
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      rows={3}
+                      autoFocus
+                      className="text-sm"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveEdit(m.id); }
+                        if (e.key === "Escape") cancelEdit();
+                      }}
+                    />
+                    <div className="flex justify-end gap-1">
+                      <Button type="button" size="sm" variant="ghost" onClick={cancelEdit} disabled={savingEdit}>
+                        <X className="w-3.5 h-3.5 mr-1" /> Cancelar
+                      </Button>
+                      <Button type="button" size="sm" onClick={() => saveEdit(m.id)} disabled={savingEdit}>
+                        {savingEdit ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Check className="w-3.5 h-3.5 mr-1" />}
+                        Salvar
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
-                  <div className={cn("max-w-[80%] px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words", mine ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-muted text-foreground rounded-bl-sm")}>
-                    {m.content}
+                  <div className={cn("group flex items-center gap-1", mine ? "flex-row-reverse" : "flex-row")}>
+                    <div className={cn("max-w-[80%] px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words", mine ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-muted text-foreground rounded-bl-sm")}>
+                      {m.content}
+                    </div>
+                    {mine && (
+                      <button
+                        type="button"
+                        onClick={() => startEdit(m)}
+                        aria-label="Editar mensagem"
+                        title="Editar mensagem"
+                        className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity p-1 rounded text-muted-foreground hover:text-foreground"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 )}
                 <span className="text-[10px] text-muted-foreground px-1">
                   {m.sender === "admin" ? "Equipe" : "Cliente"} · {new Date(m.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                  {m.edited_at ? " · editada" : ""}
                 </span>
+
               </div>
             );
           })
