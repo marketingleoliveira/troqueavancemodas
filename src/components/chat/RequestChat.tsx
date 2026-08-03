@@ -180,6 +180,31 @@ export const RequestChat = ({ requestId, as }: Props) => {
     }
   };
 
+  const startEdit = (m: Message) => {
+    setEditingId(m.id);
+    setEditingText(m.content);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingText("");
+  };
+
+  const saveEdit = async (id: string) => {
+    const text = editingText.trim();
+    if (!text) { toast.error("A mensagem não pode ficar vazia"); return; }
+    setSavingEdit(true);
+    const { error } = await supabase
+      .from("request_messages")
+      .update({ content: text, edited_at: new Date().toISOString() })
+      .eq("id", id);
+    setSavingEdit(false);
+    if (error) { toast.error("Não foi possível editar a mensagem"); return; }
+    setMessages((prev) => prev.map((x) => (x.id === id ? { ...x, content: text, edited_at: new Date().toISOString() } : x)));
+    cancelEdit();
+    toast.success("Mensagem editada");
+  };
+
   return (
     <div className="flex flex-col h-[480px] border border-border rounded-lg overflow-hidden bg-card">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/40">
