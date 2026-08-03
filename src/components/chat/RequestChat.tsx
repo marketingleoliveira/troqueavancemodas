@@ -97,7 +97,7 @@ export const RequestChat = ({ requestId, as }: Props) => {
     (async () => {
       const { data } = await supabase
         .from("request_messages")
-        .select("id, sender, content, created_at")
+        .select("id, sender, content, created_at, edited_at")
         .eq("request_id", requestId)
         .order("created_at", { ascending: true });
       if (mounted) {
@@ -111,6 +111,10 @@ export const RequestChat = ({ requestId, as }: Props) => {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "request_messages", filter: `request_id=eq.${requestId}` }, (payload) => {
         const m = payload.new as Message;
         setMessages((prev) => prev.some((x) => x.id === m.id) ? prev : [...prev, m]);
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "request_messages", filter: `request_id=eq.${requestId}` }, (payload) => {
+        const m = payload.new as Message;
+        setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, ...m } : x)));
       })
       .subscribe();
 
