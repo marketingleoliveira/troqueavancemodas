@@ -23,7 +23,7 @@ export interface ReturnRequest {
   customerName: string;
   customerEmail: string;
   date: string;
-  status: "pending" | "awaiting_shipment" | "received" | "completed" | "rejected";
+  status: "pending" | "awaiting_shipment" | "received" | "completed" | "rejected" | "withdrawn";
   type: "exchange" | "return";
   resolution: "refund" | "voucher" | "exchange";
   products: (Product & { reason: string; notes?: string })[];
@@ -140,6 +140,7 @@ export const statusLabels: Record<string, { label: string; color: string }> = {
   received: { label: "Recebido no CD", color: "bg-primary/10 text-primary" },
   completed: { label: "Concluído", color: "bg-success/10 text-success" },
   rejected: { label: "Rejeitado", color: "bg-destructive/10 text-destructive" },
+  withdrawn: { label: "Desistência", color: "bg-muted text-muted-foreground" },
 };
 
 // Labels exibidos no painel do cliente — mais explícitos sobre o fluxo de análise
@@ -149,6 +150,7 @@ export const customerStatusLabels: Record<string, { label: string; color: string
   received: { label: "Procedente — chat liberado", color: "bg-success/10 text-success" },
   completed: { label: "Concluído", color: "bg-success/10 text-success" },
   rejected: { label: "Improcedente — cancelada", color: "bg-destructive/10 text-destructive" },
+  withdrawn: { label: "Encerrada por desistência", color: "bg-muted text-muted-foreground" },
 };
 
 export const resolutionLabels: Record<string, string> = {

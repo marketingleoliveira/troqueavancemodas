@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import { RequestChat } from "@/components/chat/RequestChat";
 import { toast } from "sonner";
 import { CaseReportDialog } from "@/components/admin/CaseReportDialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { UserX } from "lucide-react";
 
 interface ConvRow {
   id: string;
@@ -28,12 +30,13 @@ const AdminChats = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const fetchList = async () => {
     const { data } = await supabase
       .from("return_requests")
       .select("id, order_id, customer_name, customer_email, status, resolution, created_at")
-      .in("status", ["received", "awaiting_shipment", "completed"])
+      .in("status", ["received", "awaiting_shipment", "completed", "withdrawn"])
       .order("created_at", { ascending: false });
     const list = (data ?? []) as ConvRow[];
     setConversations(list);
@@ -64,13 +67,14 @@ const AdminChats = () => {
 
   const selected = conversations.find((c) => c.id === selectedId) ?? null;
 
-  const updateStatus = async (status: "awaiting_shipment" | "completed", successMsg: string) => {
+  const updateStatus = async (status: "awaiting_shipment" | "completed" | "withdrawn", successMsg: string) => {
     if (!selected) return;
     setUpdating(true);
     const { error } = await supabase.from("return_requests").update({ status }).eq("id", selected.id);
     setUpdating(false);
     if (error) { toast.error("Não foi possível atualizar"); return; }
     toast.success(successMsg);
+    setWithdrawOpen(false);
     fetchList();
   };
 
@@ -169,9 +173,14 @@ const AdminChats = () => {
                       status={selected.status}
                       resolution={selected.resolution}
                     />
-                    {selected.status !== "completed" && (
+                    {selected.status !== "completed" && selected.status !== "withdrawn" && (
                       <Button size="sm" className="gap-1.5" disabled={updating} onClick={() => updateStatus("completed", "Devolução concluída.")}>
                         <CheckCircle2 className="w-3.5 h-3.5" /> Concluir devolução
+                      </Button>
+                    )}
+                    {selected.status !== "completed" && selected.status !== "withdrawn" && (
+                      <Button size="sm" variant="outline" className="gap-1.5" disabled={updating} onClick={() => setWithdrawOpen(true)}>
+                        <UserX className="w-3.5 h-3.5" /> Marcar desistência
                       </Button>
                     )}
                   </div>
@@ -184,6 +193,29 @@ const AdminChats = () => {
           )}
         </div>
       </div>
+
+      <AlertDialog open={withdrawOpen} onOpenChange={(open) => { if (!updating) setWithdrawOpen(open); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Marcar como desistência?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Use esta opção quando a cliente não responder dentro de 7 dias. O atendimento será encerrado, mas continuará no histórico.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={updating}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={updating}
+              onClick={(event) => {
+                event.preventDefault();
+                updateStatus("withdrawn", "Atendimento encerrado por desistência.");
+              }}
+            >
+              {updating ? "Salvando..." : "Confirmar desistência"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
