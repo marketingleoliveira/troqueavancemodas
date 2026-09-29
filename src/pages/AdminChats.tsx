@@ -186,7 +186,7 @@ const AdminChats = () => {
                   </div>
                 </CardContent>
               </Card>
-              <RequestChat requestId={selected.id} as="admin" />
+              <RequestChat requestId={selected.id} as="admin" readOnly={selected.status === "withdrawn"} />
             </div>
           ) : (
             <Card><CardContent className="py-12 text-center text-muted-foreground text-sm">Selecione uma conversa</CardContent></Card>

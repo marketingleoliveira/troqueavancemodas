@@ -89,6 +89,8 @@ const CustomerNewRequest = () => {
       if (prev) {
         if (prev.status === "rejected") {
           setError("Este pedido teve uma solicitação considerada improcedente e não pode receber novas solicitações.");
+        } else if (prev.status === "withdrawn") {
+          setError("Este pedido teve uma solicitação encerrada por desistência e não pode receber uma nova solicitação.");
         } else {
           setError("Já existe uma solicitação em andamento para este pedido.");
         }
