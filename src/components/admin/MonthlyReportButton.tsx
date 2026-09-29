@@ -80,6 +80,7 @@ export const MonthlyReportButton = () => {
           ["Procedentes (chat liberado)", String(byStatus["received"] || 0)],
           ["Concluídas", String(byStatus["completed"] || 0)],
           ["Improcedentes", String(byStatus["rejected"] || 0)],
+          ["Desistências", String(byStatus["withdrawn"] || 0)],
           ["Em análise", String(byStatus["pending"] || 0)],
         ],
         theme: "striped",

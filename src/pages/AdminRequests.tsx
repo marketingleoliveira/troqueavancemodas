@@ -297,7 +297,7 @@ const AdminRequests = () => {
                 <div className="flex flex-col gap-2">
                   <Button
                     className="gap-2"
-                    disabled={submitting || selected.status === "received" || selected.status === "rejected"}
+                    disabled={submitting || selected.status === "received" || selected.status === "rejected" || selected.status === "withdrawn"}
                     onClick={() => markProcedente(selected.id)}
                   >
                     <CheckCircle2 className="w-4 h-4" /> PROCEDENTE
@@ -305,7 +305,7 @@ const AdminRequests = () => {
                   <Button
                     variant="destructive"
                     className="gap-2"
-                    disabled={submitting || selected.status === "rejected"}
+                    disabled={submitting || selected.status === "rejected" || selected.status === "withdrawn"}
                     onClick={() => { setRejectReason(selected.notes ?? ""); setRejectOpen(true); }}
                   >
                     <XCircle className="w-4 h-4" /> IMPROCEDENTE
@@ -325,6 +325,9 @@ const AdminRequests = () => {
                     <div className="text-xs p-2 rounded-md bg-destructive/10 text-destructive">
                       <span className="font-medium">Motivo improcedência:</span> {selected.notes}
                     </div>
+                  )}
+                  {selected.status === "withdrawn" && (
+                    <p className="text-xs text-muted-foreground text-center">Atendimento encerrado por desistência após ausência de resposta.</p>
                   )}
                 </div>
               </div>

@@ -29,6 +29,7 @@ interface Props {
   requestId: string;
   /** "customer" when used inside the customer panel, "admin" inside the admin panel */
   as: "customer" | "admin";
+  readOnly?: boolean;
 }
 
 const IMAGE_PREFIX = "[image]";
@@ -36,7 +37,7 @@ const IMAGE_PREFIX = "[image]";
 const isImageMessage = (content: string) => content.startsWith(IMAGE_PREFIX);
 const getImageUrl = (content: string) => content.slice(IMAGE_PREFIX.length).trim();
 
-export const RequestChat = ({ requestId, as }: Props) => {
+export const RequestChat = ({ requestId, as, readOnly = false }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState("");
@@ -268,7 +269,7 @@ export const RequestChat = ({ requestId, as }: Props) => {
                     <div className={cn("max-w-[80%] px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words", mine ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-muted text-foreground rounded-bl-sm")}>
                       {m.content}
                     </div>
-                    {mine && (
+                    {mine && !readOnly && (
                       <button
                         type="button"
                         onClick={() => startEdit(m)}
@@ -292,6 +293,11 @@ export const RequestChat = ({ requestId, as }: Props) => {
         )}
       </div>
 
+      {readOnly ? (
+        <div className="border-t border-border p-3 text-center text-xs text-muted-foreground bg-muted/30">
+          Atendimento encerrado por desistência. O histórico permanece disponível para consulta.
+        </div>
+      ) : (
       <form onSubmit={send} className="border-t border-border p-2 flex gap-2 bg-card">
         <input
           ref={fileInputRef}
@@ -349,6 +355,7 @@ export const RequestChat = ({ requestId, as }: Props) => {
           <Send className="w-4 h-4" />
         </Button>
       </form>
+      )}
     </div>
   );
 };

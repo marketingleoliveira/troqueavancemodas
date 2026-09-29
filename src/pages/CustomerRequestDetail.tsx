@@ -129,6 +129,15 @@ const CustomerRequestDetail = () => {
             </p>
           </CardContent>
         </Card>
+      ) : data.status === "withdrawn" ? (
+        <Card>
+          <CardContent className="p-4 space-y-1 text-center">
+            <p className="text-sm font-semibold">Atendimento encerrado por desistência</p>
+            <p className="text-xs text-muted-foreground">
+              A solicitação foi encerrada após 7 dias sem resposta.
+            </p>
+          </CardContent>
+        </Card>
       ) : data.status === "pending" ? (
         <Card>
           <CardContent className="p-4 text-center">
