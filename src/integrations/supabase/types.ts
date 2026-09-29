@@ -323,6 +323,7 @@ export type Database = {
         | "received"
         | "completed"
         | "rejected"
+        | "withdrawn"
       request_type: "exchange" | "return"
     }
     CompositeTypes: {
@@ -460,6 +461,7 @@ export const Constants = {
         "received",
         "completed",
         "rejected",
+        "withdrawn",
       ],
       request_type: ["exchange", "return"],
     },
