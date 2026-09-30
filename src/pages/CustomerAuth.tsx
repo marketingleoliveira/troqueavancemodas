@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,6 +110,9 @@ const CustomerAuth = () => {
                 </div>
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Entrar"}
+                </Button>
+                <Button asChild type="button" variant="link" className="w-full" disabled={loading}>
+                  <Link to="/forgot-password">Esqueci minha senha</Link>
                 </Button>
               </form>
             </TabsContent>
