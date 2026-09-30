@@ -16,6 +16,8 @@ import CustomerLayout from "./pages/CustomerLayout.tsx";
 import CustomerRequests from "./pages/CustomerRequests.tsx";
 import CustomerNewRequest from "./pages/CustomerNewRequest.tsx";
 import CustomerRequestDetail from "./pages/CustomerRequestDetail.tsx";
+import ForgotPassword from "./pages/ForgotPassword.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/portal" element={<Portal />} />
           <Route path="/auth" element={<CustomerAuth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/minha-conta" element={<CustomerLayout />}>
             <Route index element={<CustomerRequests />} />
             <Route path="nova" element={<CustomerNewRequest />} />

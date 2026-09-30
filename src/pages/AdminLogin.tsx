@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -160,6 +160,9 @@ const AdminLogin = () => {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Entrar
+            </Button>
+            <Button asChild type="button" variant="link" className="w-full" disabled={loading}>
+              <Link to="/forgot-password?source=admin">Esqueci minha senha</Link>
             </Button>
           </form>
         </CardContent>
